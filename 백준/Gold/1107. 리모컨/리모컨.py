@@ -21,7 +21,8 @@ def solution():
         if can_press:
             # (숫자 버튼 누르는 횟수) + (+,- 누르는 횟수)
             clicks = len(channel)+abs(n-c)
-            min_clicks = min(min_clicks, clicks)
+            if clicks < min_clicks:
+                min_clicks = clicks
     print(min_clicks)
 
 solution()
