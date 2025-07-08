@@ -7,7 +7,7 @@ def solution(numbers, target):
         for idx in range(n):
             if i[idx] == '+': # 첫 번째가 +라면 숫자만 고려
                 result += numbers[idx]
-            elif i[idx] == '-':
+            else:
                 result -= numbers[idx]
         if result == target:
             count += 1  
