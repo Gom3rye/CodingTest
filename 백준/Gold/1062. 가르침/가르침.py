@@ -27,7 +27,7 @@ def solution():
         teach = set(comb)
         count = 0
         for candidate in word:
-            if candidate <= teach:
+            if candidate.issubset(teach):
                 count += 1
         max_count = max(max_count, count)
     print(max_count)
