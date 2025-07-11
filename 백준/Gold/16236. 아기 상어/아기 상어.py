@@ -1,50 +1,73 @@
 import sys
-input = sys.stdin.readline
 from collections import deque
+input = sys.stdin.readline
+
 def solution():
     n = int(input())
     sea = [list(map(int, input().split())) for _ in range(n)]
+
+    # 초기 아기 상어 위치 찾기
     for i in range(n):
         for j in range(n):
             if sea[i][j] == 9:
-                sx, sy = i, j # shark의 위치
-                sea[i][j] = 0 # 상어 위치는 빈칸으로 초기화
-                break
+                sx, sy = i, j
+                sea[i][j] = 0
 
-    directions = [(-1,0), (1,0), (0,-1), (0,1)]
-    # 먹을 수 있는 최단 거리의 물고기 거리와 위치 반환
+    directions = [(-1,0), (0,-1), (0,1), (1,0)]  # 위, 왼, 오, 아래 (우선순위 맞게 설정)
+    size = 2
+    eat = 0
+    time = 0
+
     def bfs(sx, sy, size):
-        distance = [[-1]*n for _ in range(n)] # 중복 방문 방지 + 거리 상태 저장
-        fish = []
-        distance[sx][sy] = 0
-        q = deque([(sx, sy)]) # q에는 이동할 수 있는 좌표들 담으면서 최단 거리에 있는 fish_list 구하기
+        visited = [[-1]*n for _ in range(n)]
+        visited[sx][sy] = 0
+        q = deque([(sx, sy)])
+
+        min_dist = sys.maxsize
+        fish_x, fish_y = -1, -1
+
         while q:
             x, y = q.popleft()
-            for dx, dy in directions:
-                nx, ny = dx+x, dy+y
-                if 0<=nx<n and 0<=ny<n and distance[nx][ny] == -1:
-                    # 상어 크기보다 작거나 같으면 이동 가능
-                    if sea[nx][ny] <= size:
-                        distance[nx][ny] = distance[x][y]+1
-                        q.append((nx, ny))
-                        # 상어 크기보다 작으면 먹을 수 있음
-                        if 0 < sea[nx][ny] < size:
-                            fish.append((distance[nx][ny], nx, ny))
 
-        return sorted(fish)
-        
-    time, size, ate = 0, 2, 0 # 초, 상어 크기, 먹은 물고기 개수
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+
+                if 0 <= nx < n and 0 <= ny < n:
+                    if visited[nx][ny] == -1 and sea[nx][ny] <= size:
+                        visited[nx][ny] = visited[x][y] + 1
+                        dist = visited[nx][ny]
+
+                        # 먹을 수 있는 물고기 발견
+                        if 0 < sea[nx][ny] < size:
+                            if dist < min_dist:
+                                min_dist = dist
+                                fish_x, fish_y = nx, ny
+                            elif dist == min_dist:
+                                # 우선순위: 위 -> 왼
+                                if nx < fish_x or (nx == fish_x and ny < fish_y):
+                                    fish_x, fish_y = nx, ny
+                        q.append((nx, ny))
+
+        if fish_x == -1:
+            return None
+        else:
+            return (fish_x, fish_y, min_dist)
+
     while True:
-        fish_list = bfs(sx, sy, size)
-        if not fish_list: # 아무것도 없어서 None을 반환한다면 (무한루프 종료조건)
-            break 
-        dist, fx, fy = fish_list[0] # 가장 우선 순위에 있는 물고기 뽑아서 먹기
-        sea[fx][fy] = 0 # 먹고 난 자리 0으로 업데이트
+        result = bfs(sx, sy, size)
+        if not result:
+            break
+
+        fx, fy, dist = result
         time += dist
-        ate += 1
-        sx, sy = fx, fy # 상어 위치 상태 업데이트
-        if ate == size:
+        sea[fx][fy] = 0
+        sx, sy = fx, fy
+        eat += 1
+
+        if eat == size:
             size += 1
-            ate = 0
+            eat = 0
+
     print(time)
+
 solution()
