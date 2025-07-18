@@ -29,6 +29,7 @@ def solution():
         return distance[d], prev
     min_d, prev = dijkstra(s)
     print(min_d)
+    prev.append(s)
     # print(len(prev)) 여기에는 최단 경로가 될 수 있는 모든 노드들이 모여있으므로 정답x
     temp = d
     track = []
