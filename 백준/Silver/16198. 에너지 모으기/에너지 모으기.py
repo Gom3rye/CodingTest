@@ -1,23 +1,23 @@
 import sys
 input = sys.stdin.readline
+n = int(input()) # 구슬의 개수
+w = list(map(int, input().split()))
+max_energy = 0
+def backtracking(arr, energy):
+    global max_energy
 
-def solution():
-    N = int(input())
-    weights = list(map(int, input().split()))
-    max_energy = [0]  # 리스트로 감싸서 참조로 업데이트 가능하게 함
+    # if energy <= max_energy: # energy는 누적값으로 현재 작아도 나중에 커질 수 있으므로
+    #     return
+    
+    if len(arr) == 2:
+        max_energy = max(max_energy, energy)
+        return
+    
+    for i in range(1, len(arr)-1):
+        marbles = arr[i-1] * arr[i+1]
+        removed = arr.pop(i) # i번째 구술 제거
+        backtracking(arr, energy+marbles)
+        arr.insert(i, removed)
 
-    def dfs(current, energy):
-        if len(current) == 2:  # 앞뒤만 남았을 때 종료
-            max_energy[0] = max(max_energy[0], energy)
-            return
-        
-        for i in range(1, len(current) - 1):
-            gain = current[i - 1] * current[i + 1]
-            removed = current.pop(i)
-            dfs(current, energy + gain)
-            current.insert(i, removed)  # 원상복구 (백트래킹)
-
-    dfs(weights, 0)
-    print(max_energy[0])
-
-solution()
+backtracking(w, 0)
+print(max_energy)
