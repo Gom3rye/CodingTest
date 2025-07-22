@@ -9,29 +9,29 @@ def solution():
         graph[a].append((b, c))
         graph[b].append((a, c))
     
-    result = 0
-    def dijkstra(min_affordable, s):
-        nonlocal result
+    def dijkstra(limit, s):
         q = []
-        heapq.heappush(q, (min_affordable, s))
-        visited = [False]*(n+1)
+        heapq.heappush(q, (-limit, s)) # -를 붙여서 max_heap 만들기
+        max_limit = [0]*(n+1)
+        max_limit[s] = limit
         while q:
-            min_affordable, start = heapq.heappop(q)
-            min_affordable = -min_affordable
+            limit, now = heapq.heappop(q)
+            limit = -limit # -를 붙여서 넣어줬으니까 빼고 난 후는 원상 복구
 
-            if start == e:
-                result = max(min_affordable, result)
+            if now == e:
+                print(limit)
                 return
             
-            if visited[start]:
+            if limit < max_limit[now]: # 현재 max_limit 값보다 limit이 작으면 갱신할 필요 없으니까 pass 
                 continue
-            visited[start] = True
 
-            for next, affordable in graph[start]:
-                if not visited[next]:
-                    affordable = min(affordable, min_affordable)
-                    heapq.heappush(q, (-affordable, next))
+            for nxt, next_limit in graph[now]:
+                affordable = min(limit, next_limit)
+                if affordable > max_limit[nxt]:
+                    max_limit[nxt] = affordable
+                    heapq.heappush(q, (-affordable, nxt))
 
-    dijkstra(-1000001, s)
-    print(result)
+        print(0) # s -> e 까지의 경로가 없다면 아무것도 가져갈 수 없으니 0 출력
+        return
+    dijkstra(1000001, s)
 solution()
