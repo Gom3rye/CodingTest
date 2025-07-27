@@ -1,21 +1,13 @@
-import bisect
-
+import sys
+input = sys.stdin.readline
 def solution():
-    import sys
-    input = sys.stdin.readline
-    
-    N = int(input())
-    children = [int(input()) for _ in range(N)]
-
-    LIS = []
-
-    for num in children:
-        idx = bisect.bisect_left(LIS, num)
-        if idx == len(LIS):
-            LIS.append(num)
-        else:
-            LIS[idx] = num
-
-    print(N - len(LIS))
-
+    # LIC을 구하는 문제!
+    n = int(input())
+    children = list(int(input()) for _ in range(n))
+    dp = [1]*(n+1)
+    for i in range(1, n):
+        for j in range(i):
+            if children[i] > children[j]:
+                dp[i] = max(dp[i], dp[j]+1)
+    print(n-max(dp))
 solution()
