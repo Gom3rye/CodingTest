@@ -1,26 +1,21 @@
 import sys
 input = sys.stdin.readline
-
 def solution():
-    N, M = map(int, input().split())
+    n, m = map(int, input().split())
     memory = list(map(int, input().split()))
     cost = list(map(int, input().split()))
-
-    total_cost = sum(cost)
-    dp = [0] * (total_cost + 1)
-
-    for i in range(N):
-        m = memory[i]
-        c = cost[i]
-        # 배낭 문제: 비용을 역순으로 탐색
-        for j in range(total_cost, c - 1, -1):
-            dp[j] = max(dp[j], dp[j - c] + m)
-
-    for c in range(total_cost + 1):
-        if dp[c] >= M:
-            print(c)
-            return
-
-    # 예외 처리 (문제 조건상 발생하지 않음)
-    print(-1)
+    dp = {0:0} # dp[cost] = cost에 확보할 수 있는 최대 memory
+    # 최소 비용에 최대 메모리를 갖도록 해야 한다.
+    for mem, c in zip(memory, cost):
+        temp = {}
+        for dp_c, dp_mem in dp.items(): # key, value
+            nm, nc = dp_mem+mem, dp_c+c
+            if dp.get(nc, -1) < nm:
+                temp[nc] = nm
+        dp.update(temp)
+    min_cost = float('inf')
+    for c, mem in dp.items():
+        if mem >= m:
+            min_cost = min(min_cost, c)
+    print(min_cost)
 solution()
