@@ -1,14 +1,16 @@
+import sys
+input = sys.stdin.readline
 def solution():
-    N = int(input())
-    L = list(map(int, input().split()))  # 체력 소모
-    J = list(map(int, input().split()))  # 기쁨 얻기
+    n = int(input())
+    l = list(map(int, input().split())) # 체력
+    j = list(map(int, input().split())) # 기쁨
+    # dp[i]: i만큼 체력을 사용했을 때 얻을 수 있는 최대 기쁨
+    dp = [0]*100 # 99까지 체력을 쓸 수 있다.
+    for i in range(n):
+        cost = l[i]
+        joy = j[i]
+        for hp in range(99, cost-1, -1): # 맨 뒤에서부터 갱신
+            dp[hp] = max(dp[hp], dp[hp-cost]+joy)
 
-    dp = [0] * 101  # dp[체력] = 최대 기쁨
-
-    for i in range(N):
-        for hp in range(100, L[i] - 1, -1):  # 뒤에서부터 갱신
-            dp[hp] = max(dp[hp], dp[hp - L[i]] + J[i])
-
-    print(max(dp[:100]))  # 체력이 1 이상인 경우만 고려 (0은 죽음)
-
+    print(max(dp[:100])) # 체력이 0이면 안되니까
 solution()
