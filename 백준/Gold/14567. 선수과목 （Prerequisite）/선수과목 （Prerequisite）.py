@@ -1,25 +1,22 @@
 import sys
 input = sys.stdin.readline
-from collections import deque
 def solution():
     n, m = map(int, input().split())
     graph = [[] for _ in range(n+1)]
-    indegree = [0]*(n+1)
     for _ in range(m):
         pre, nxt = map(int, input().split())
-        graph[pre].append(nxt)
-        indegree[nxt] += 1
-    period = [1]*(n+1)
-    q = deque()
+        graph[nxt].append(pre)
+    period = [-1]*(n+1)
+    def dfs(nxt):
+        if period[nxt] != -1:
+            return period[nxt]
+        max_pre = 0
+        for pre in graph[nxt]:
+            max_pre = max(max_pre, dfs(pre))
+        period[nxt] = max_pre + 1
+        return period[nxt]
+    # 모든 과목에 대해 최소 몇 학기 걸리는지 물었으니까 전체 dfs 돌리기
     for i in range(1, n+1):
-        if indegree[i] == 0:
-            q.append(i) # 선수과목 없는 것들 먼저 듣기 위해 큐에 넣기
-    while q:
-        pre = q.popleft()
-        for nxt in graph[pre]:
-            indegree[nxt] -= 1
-            if indegree[nxt] == 0:
-                period[nxt] = period[pre]+1
-                q.append(nxt)
+        dfs(i)
     print(*period[1:])
 solution()
