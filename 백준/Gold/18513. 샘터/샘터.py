@@ -9,15 +9,15 @@ def solution():
         info.append((w, 0))
     q = deque(info)
     visited = set(well)
-    result = []
+    total_dist = 0
     while q:
         now, dist = q.popleft()
         for nxt in [now+1, now-1]:
             if nxt not in visited:
                 visited.add(nxt)
                 q.append((nxt, dist+1))
-                result.append(dist+1)
+                total_dist += (dist+1)
                 if len(visited) == k+len(well):
-                    print(sum(result))
+                    print(total_dist)
                     return
 solution()
