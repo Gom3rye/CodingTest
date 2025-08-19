@@ -1,44 +1,38 @@
-from collections import deque
 import sys
+from collections import deque
 input = sys.stdin.readline
-
 def solution():
     board = [list(input().strip()) for _ in range(8)]
-
-    # 9방향 (8방향 + 제자리)
     directions = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,0),(0,1),(1,-1),(1,0),(1,1)]
-
-    def get_wall(t):
-        temp = [['.']*8 for _ in range(8)]
-        for i in range(8):
-            for j in range(8):
-                if board[i][j] == '#':
-                    if i + t < 8:
-                        temp[i+t][j] = '#'
-        return temp
-
-    q = deque()
-    q.append((7, 0, 0))  # x, y, time
-    visited = [[[False]*9 for _ in range(8)] for _ in range(8)]
-
+    q = deque([(7, 0)])
+    time = 0
     while q:
-        x, y, t = q.popleft()
-        if x == 0 and y == 7:
+        visited_this_turn = set()
+        # 현재 시간에 탐색할 수 있는 모든 위치를 한 번에 처리 (시간의 흐름 정확히 시뮬레이션하기 위해서)
+        for _ in range(len(q)):
+            x, y = q.popleft()
+            # 현재 위치가 벽과 충돌하는 지 확인
+            if x-time >= 0 and board[x-time][y] =='#':
+                continue
+            for dx, dy in directions:
+                nx, ny = dx+x, dy+y
+                if nx == 0 and ny == 7:
+                    print(1)
+                    return
+                # 다음 위치가 유효한지 확인
+                if 0<=nx<8 and 0<=ny<8:
+                    if nx-time >= 0 and board[nx-time][ny] == '#':
+                        continue
+                    if nx-time-1 >= 0 and board[nx-time-1][ny] == '#':
+                        continue
+                    if (nx, ny) not in visited_this_turn:
+                        visited_this_turn.add((nx, ny))
+                        q.append((nx, ny))
+        time += 1
+        # 8초면 모든 벽이 사라져서 무조건 도착 가능
+        if time >= 8:
             print(1)
             return
-
-        wall_now = get_wall(t)
-        wall_next = get_wall(t+1)
-
-        for dx, dy in directions:
-            nx, ny = x+dx, y+dy
-            nt = min(t+1, 8)  # time은 8이상이면 벽이 다 사라짐
-            if 0<=nx<8 and 0<=ny<8:
-                if wall_now[nx][ny] == '#' or wall_next[nx][ny] == '#':
-                    continue
-                if not visited[nx][ny][nt]:
-                    visited[nx][ny][nt] = True
-                    q.append((nx, ny, nt))
+    # while 루프가 끝날 때까지 못하면 실패
     print(0)
-
 solution()
