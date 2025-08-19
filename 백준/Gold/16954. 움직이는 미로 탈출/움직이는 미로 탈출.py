@@ -11,9 +11,6 @@ def solution():
         # 현재 시간에 탐색할 수 있는 모든 위치를 한 번에 처리 (시간의 흐름 정확히 시뮬레이션하기 위해서)
         for _ in range(len(q)):
             x, y = q.popleft()
-            # 현재 위치가 벽과 충돌하는 지 확인
-            if x-time >= 0 and board[x-time][y] =='#':
-                continue
             for dx, dy in directions:
                 nx, ny = dx+x, dy+y
                 if nx == 0 and ny == 7:
