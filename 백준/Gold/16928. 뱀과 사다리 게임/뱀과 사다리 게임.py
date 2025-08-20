@@ -24,13 +24,17 @@ def solution():
                 # 보드 범위 넘어가면 안됨
                 if nxt > 100:
                     continue
-                # 다음 칸이 사다리나 뱀인지 확인 (이때는 텔레포트 개념이므로 거리 +1 안해줘도 된다.)
-                if nxt in board:
-                    nxt = board[nxt]
-                # 이동할 칸이 방문하지 않은 곳이라면 방문할 수 있다.
+                
                 if visited[nxt] == -1:
-                    visited[nxt] = visited[now]+1
-                    q.append(nxt)
+                    # 다음 칸이 사다리나 뱀인지 확인 (이때는 텔레포트 개념이므로 거리 +1 안해줘도 된다.)
+                    if nxt in board:
+                        nxt = board[nxt]
+                        if visited[nxt] == -1:
+                            visited[nxt] = visited[now]+1
+                            q.append(nxt)
+                    else:
+                        visited[nxt] = visited[now]+1
+                        q.append(nxt)
             
     bfs(1)
 solution()
