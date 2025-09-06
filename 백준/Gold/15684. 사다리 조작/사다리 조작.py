@@ -1,65 +1,51 @@
 import sys
-
+input = sys.stdin.readline
 def solution():
-    input = sys.stdin.readline
-    N, M, H = map(int, input().split())
-    
-    # ladder[h][n] -> n번 세로선과 n+1번 세로선을 h번 위치에서 연결
-    ladder = [[False] * (N + 1) for _ in range(H + 1)]
-    for _ in range(M):
+    n, m, h = map(int, input().split()) # 세로선, 이미 있는 가로선, 가로선
+    ladder = [[False]*(n+1) for _ in range(h+1)]
+    for _ in range(m):
         a, b = map(int, input().split())
         ladder[a][b] = True
 
+    possible_ladders = []
+    for i in range(1, h+1):
+        for j in range(1, n):
+            if not ladder[i][j] and not ladder[i][j-1] and not ladder[i][j+1]:
+                possible_ladders.append((i, j))
+
     def check():
-        """모든 i번 세로선이 i번으로 도착하는지 확인"""
-        for start_col in range(1, N + 1):
-            current_col = start_col
-            for row in range(1, H + 1):
-                if ladder[row][current_col]:  # 오른쪽으로 이동
-                    current_col += 1
-                elif ladder[row][current_col - 1]:  # 왼쪽으로 이동
-                    current_col -= 1
-            if current_col != start_col:
+        for i in range(1, n+1): # 세로선
+            start = i
+            for j in range(1, h+1):
+                if ladder[j][start]:
+                    start += 1
+                elif ladder[j][start-1]:
+                    start -= 1
+            if start != i:
                 return False
         return True
-
-    def dfs(start_idx, count, target_cnt):
-        """
-        target_cnt 개의 사다리를 놓는 모든 조합을 탐색
-        start_idx: 조합을 만들 때 중복을 피하기 위한 시작 위치
-        """
-        nonlocal answer
-        
-        # 목표 개수만큼 사다리를 다 놓았다면
-        if count == target_cnt:
-            if check():
-                answer = target_cnt # 성공했다면 answer 갱신
+    
+    result = 4
+    def backtracking(s, cnt):
+        nonlocal result
+        # 제일 작은 횟수가 정답이 되어야 한다.
+        if cnt >= result:
             return
+        
+        if check():
+            result = cnt
+            return
+        
+        if cnt == 3: # 3개를 놓았는데 아직 답을 못찾았다는 거니까
+            return
+        
+        for idx in range(s, len(possible_ladders)):
+            a, b = possible_ladders[idx]
+            if not ladder[a][b-1] and not ladder[a][b+1]:
+                ladder[a][b] = True # 사다리 놓을 수 있음
+                backtracking(idx+1, cnt+1)
+                ladder[a][b] = False
 
-        # (r, c)에 사다리를 놓는 것을 시도
-        # start_idx를 이용해 이전에 탐색한 위치는 다시 보지 않음
-        for i in range(start_idx, H + 1):
-            for j in range(1, N):
-                # 연속된 가로선은 놓을 수 없음
-                if ladder[i][j] or ladder[i][j - 1] or ladder[i][j + 1]:
-                    continue
-                
-                ladder[i][j] = True
-                dfs(i, count + 1, target_cnt)
-                ladder[i][j] = False
-
-                # ★★★ 중요 ★★★
-                # 정답을 찾았다면 더 이상 탐색할 필요가 없으므로 즉시 종료
-                if answer != -1:
-                    return
-
-    answer = -1
-    # 0개부터 3개까지 차례대로 시도
-    for i in range(4):
-        dfs(1, 0, i)
-        if answer != -1:
-            break
-            
-    print(answer)
-
+    backtracking(0,0)
+    print(result if result != 4 else -1)
 solution()
