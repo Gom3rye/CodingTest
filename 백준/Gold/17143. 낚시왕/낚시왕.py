@@ -1,63 +1,83 @@
 import sys
 input = sys.stdin.readline
-def solution():
-    r, c, m = map(int, input().split()) # m: 상어의 수
-    # 상어의 이동을 구현해야 하니까 상어의 정보를 2차원 배열(board)안에서 관리하자.
-    board = [[None]*c for _ in range(r)]
-    for _ in range(m):
-        x, y, s, d, z = map(int, input().split())
-        board[x-1][y-1] = [s, d, z] # 0based index
-    
-    directions = {1:(-1,0), 2:(1,0), 3:(0,1), 4:(0,-1)}
-    # 낚시왕이 0 ~ c-1까지 이동하면서 r이 가장 작은 쪽에 있는 상어를 잡는다. -> 상어 이동
-    # 낚시왕이 잡은 상어 크기의 합을 출력
-    score = 0
-    fisher = 0 # 낚시왕의 출발 위치
-    def fishing(now):
-        nonlocal score
-        # row가 가장 작은 상어 잡기
-        for i in range(r):
-            if board[i][now] != None:
-                score += board[i][now][-1]
-                board[i][now] = None # 상어 잡기
-                break
-    # 이동 중에는 보드의 모습이 바뀌고 이를 동시에 변경하면 꼬이니까 new board를 생성해서 결과만 board에 새로 할당 (board = new_board)
-    def sharks_move(board):
-        new_board = [[None]*c for _ in range(r)]
-        for i in range(r):
-            for j in range(c):
-                if board[i][j] != None:
-                    speed, d, size = board[i][j]
-                    # 왕복 주기로 위치 계산
-                    if d in [1, 2]: # 상하 운동
-                        temp_speed = speed % ((r-1)*2)
-                    else: # 좌우 운동
-                        temp_speed = speed % ((c-1)*2)
 
-                    ox, oy = i, j # original_x, original_y 저장해놓기
-                    for _ in range(temp_speed): # temp_speed만큼 이동
-                        nx, ny = directions[d][0]+ox, directions[d][1]+oy
-                        if not (0<=nx<r and 0<=ny<c): # 범위에 벗어난다면 방향 변경
-                            if d == 1: d = 2
-                            elif d == 2: d = 1
-                            elif d == 3: d = 4
-                            else: d = 3
-                            nx, ny = directions[d][0]+ox, directions[d][1]+oy
-                        ox, oy = nx, ny # 새로 이동한 위치 갱신
+def solution():
+    R, C, M = map(int, input().split())
+    board = [[None] * C for _ in range(R)]
+    for _ in range(M):
+        r, c, s, d, z = map(int, input().split())
+        board[r - 1][c - 1] = [s, d, z]
+
+    # 방향 정보 (0-indexed로 다루기 편하게 변경)
+    # 0:상, 1:하, 2:우, 3:좌
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, 1, -1]
+    
+    # 입력 d(1~4)를 dx,dy 인덱스(0~3)로 변환하는 맵
+    d_map = {1: 0, 2: 1, 3: 2, 4: 3}
+    
+    # 방향 전환을 위한 맵 (상↔하, 우↔좌)
+    d_rev = [1, 0, 3, 2]
+
+    score = 0
+
+    for fisher_col in range(C):
+        # 1. 낚시
+        for i in range(R):
+            if board[i][fisher_col]:
+                score += board[i][fisher_col][2]
+                board[i][fisher_col] = None
+                break
+        
+        # 2. 상어 이동
+        new_board = [[None] * C for _ in range(R)]
+        for r_idx in range(R):
+            for c_idx in range(C):
+                if board[r_idx][c_idx]:
+                    s, d_orig, z = board[r_idx][c_idx]
+                    d = d_map[d_orig] # 방향을 0~3 인덱스로 변환
+                    nr, nc = r_idx, c_idx
+
+                    if d < 2: # 상하 이동
+                        cycle = (R - 1) * 2
+                        if cycle > 0:
+                            s %= cycle
+                        
+                        # O(1) 계산
+                        # 1. 이동 거리를 더함
+                        final_pos = nr + s * dx[d]
+                        # 2. divmod로 몫과 나머지 계산
+                        quotient, remainder = divmod(final_pos, R - 1)
+                        # 3. 몫에 따라 최종 위치와 방향 결정
+                        if quotient % 2 == 0:
+                            nr = remainder
+                        else:
+                            nr = (R - 1) - remainder
+                            d = d_rev[d]
+
+                    else: # 좌우 이동
+                        cycle = (C - 1) * 2
+                        if cycle > 0:
+                            s %= cycle
+                        
+                        final_pos = nc + s * dy[d]
+                        quotient, remainder = divmod(final_pos, C - 1)
+                        if quotient % 2 == 0:
+                            nc = remainder
+                        else:
+                            nc = (C - 1) - remainder
+                            d = d_rev[d]
                     
-                    # 새로 이동한 위치에 상어가 있다면
-                    if new_board[ox][oy] != None:
-                        if new_board[ox][oy][-1] > size: # 기존 상어의 상어가 현재 상어의 크기보다 크다면
-                            continue
-                    new_board[ox][oy] = [speed, d, size] # 상어 놓기
-        return new_board
-                            
-    while fisher < c:
-        # 낚시왕이 있는 열의 상어 잡기
-        fishing(fisher)
-        # 상어 이동
-        new_board = sharks_move(board)
-        fisher += 1
+                    # 3. 포식 처리
+                    if new_board[nr][nc]:
+                        if z > new_board[nr][nc][2]:
+                            # 방향은 1~4로 다시 변환해서 저장
+                            new_board[nr][nc] = [s, list(d_map.keys())[list(d_map.values()).index(d)], z]
+                    else:
+                        new_board[nr][nc] = [s, list(d_map.keys())[list(d_map.values()).index(d)], z]
+        
         board = new_board
+        
     print(score)
+
 solution()
