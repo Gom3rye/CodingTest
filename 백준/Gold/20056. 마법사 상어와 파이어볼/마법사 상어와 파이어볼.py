@@ -13,6 +13,7 @@ def solution():
         for i in range(n):
             for j in range(n):
                 if board[i][j] != None:
+                    # board[i][j]가 한 개가 아닐 수 있음에 for문으로 돌기
                     for mv, dv, sv in board[i][j]:
                         s = sv % n # 속도 최적화
                         dx, dy = directions[dv]
@@ -26,19 +27,18 @@ def solution():
 
         return new_board
     def modify(board):
-        final_board = [[None]*n for _ in range(n)]
+        final_board = board
         for i in range(n):
             for j in range(n):
-                if board[i][j] == None:
+                if final_board[i][j] == None:
                     continue
                 # 2개 이상 모인 경우
-                cnt = len(board[i][j])
+                cnt = len(final_board[i][j])
                 if cnt >= 2:
                     # 합쳐지는 질량, 속력, 방향
                     sum_m, sum_s = 0, 0
                     odd, even = 0, 0 # 홀수 개수, 짝수 개수
-                    for idx in range(cnt):
-                        mv, dv, sv = board[i][j][idx]
+                    for mv, dv, sv in final_board[i][j]:
                         sum_m += mv
                         sum_s += sv
                         if dv%2 == 1: # 홀수이면
@@ -49,7 +49,9 @@ def solution():
                     modified_m, modified_s = sum_m//5, sum_s//cnt
                     # 질량이 0이면 소멸되기
                     if modified_m == 0:
+                        final_board[i][j] = None
                         continue
+        
                     if odd == 0 or even == 0:
                         dirs = [0, 2, 4, 6]
                     else:
@@ -68,8 +70,7 @@ def solution():
     for _ in range(k):
         new_board = move(board)
         # 이동이 끝난 뒤 2개 이상의 파이어볼이 있는 칸 조정
-        final_board = modify(new_board)
-        board = final_board # 다음 이동에서 final_board를 board로 넣어주기 위해
+        board = modify(new_board)
     
     # 남아있는 파이어볼 질량의 합 구하기
     score = 0
