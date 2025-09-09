@@ -1,26 +1,25 @@
 import sys
+from itertools import combinations
 input = sys.stdin.readline
 def solution():
     n = int(input())
     h = list(map(int, input().split()))
     min_diff = float('inf')
-    # n^4는 시간 초과
-    h.sort() # 왼쪽 포인터를 늘리면 값이 커지고 오른쪽 포인터를 줄이면 값이 작아진다는 단조성을 주기 위해 정렬
-    for start in range(n-3):
-        for end in range(start+3, n):
-            anna = h[start]+h[end] # 안나가 만든 눈사람의 키
-            s, e = start+1, end-1
-            while s < e:
-                elsa = h[s]+h[e]
-                min_diff = min(min_diff, abs(anna-elsa))
-                if min_diff == 0: # 0이면 종료
-                    print(0)
-                    return
-                # anna가 elsa보다 더 크다면 elsa의 눈사람 크기 키우기
-                if anna > elsa:
-                    s += 1
-                elif anna < elsa: # elsa의 눈사람 크기 줄이기
-                    e -= 1
+    # 눈사람 후보군 먼저 만들고
+    possible_snowmen = []
+    for i, j in combinations(range(n), 2):
+        possible_snowmen.append((h[i]+h[j], i, j)) # (키, 인덱스i, 인덱스j)
+    # 인접한 눈사람의 키가 비슷하도록 키 기준으로 정렬 -> (양옆만 확인해도 됨)
+    possible_snowmen.sort()
+    cnt = len(possible_snowmen) # 가능한 눈사람들의 개수
+    for i in range(cnt-1):
+        anna, ai, aj = possible_snowmen[i]
+        elsa, ei, ej = possible_snowmen[i+1]
+        # 서로의 인덱스가 곂치면 안된다.
+        if len(set([ai, aj, ei, ej])) == 4:
+            min_diff = min(min_diff, abs(anna-elsa))
+            if min_diff == 0:
+                break
 
     print(min_diff)
 solution()
