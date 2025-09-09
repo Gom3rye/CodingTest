@@ -1,73 +1,61 @@
-from collections import deque
 import sys
-
+from collections import deque
+input = sys.stdin.readline
 def solution():
-    # 입력 받기
-    N, M, T = map(int, sys.stdin.readline().split())
-    disks = [deque(map(int, sys.stdin.readline().split())) for _ in range(N)]
-    
-    # T번의 회전 명령 실행
-    for _ in range(T):
-        x, d, k = map(int, sys.stdin.readline().split())
-        
-        # 1. 원판 회전
-        for i in range(N):
-            # 원판 번호는 i+1
-            if (i + 1) % x == 0:
-                if d == 0:  # 시계 방향
-                    disks[i].rotate(k)
-                else:  # 반시계 방향
-                    disks[i].rotate(-k)
-
-        # 2. 인접하면서 같은 수 찾기
-        # 삭제할 좌표를 저장할 집합
-        to_delete = set()
-        
-        # 2-1. 같은 원판 내에서 인접한 수 찾기
-        for i in range(N):
-            for j in range(M):
-                if disks[i][j] != 0 and disks[i][j] == disks[i][(j + 1) % M]:
-                    to_delete.add((i, j))
-                    to_delete.add((i, (j + 1) % M))
-
-        # 2-2. 다른 원판과 인접한 수 찾기
-        for j in range(M):
-            for i in range(N - 1):
-                if disks[i][j] != 0 and disks[i][j] == disks[i+1][j]:
-                    to_delete.add((i, j))
-                    to_delete.add((i + 1, j))
-
-        # 3. 삭제 또는 평균 조정
-        if to_delete:
-            # 3-1. 삭제할 수가 있는 경우
-            for r, c in to_delete:
-                disks[r][c] = 0
+    n, m, t = map(int, input().split()) # 반지름, 원판에 적인 수의 개수, 회전 횟수
+    circles = [0]+[deque(map(int, input().split())) for _ in range(n)] # 1based index
+    for _ in range(t):
+        x, d, k = map(int, input().split()) # 번호가 x의 배수인 원판을 d방향(0:시계, 1:반시계)으로 k칸 회전
+        if d == 1:
+            k = -k
+        for i in range(x, n+1, x): # x의 배수만
+            circles[i].rotate(k)
+        # 인접하면서 수가 같은 것 모두 찾기 (set에 넣어놔서 한 번에 0처리, 개별적으로 해주면 코드 길어짐)
+        tobedeleted = set()
+        # 같은 원판 내에서 인접
+        for i in range(1, n+1):
+            for j in range(m):
+                target = circles[i][j]
+                if target == 0:
+                    continue
+                if target == circles[i][(j+1)%m]:
+                    tobedeleted.add((i, j))
+                    tobedeleted.add((i, (j+1)%m))
+        # 다른 원판끼리 인접
+        for j in range(m):
+            for i in range(1, n):
+                target = circles[i][j]
+                if target == 0:
+                    continue
+                if target == circles[i+1][j]:
+                    tobedeleted.add((i, j))
+                    tobedeleted.add((i+1, j))
+        # 지울 것이 있다면
+        if tobedeleted:
+            for x, y in tobedeleted:
+                circles[x][y] = 0
         else:
-            # 3-2. 삭제할 수가 없는 경우
-            total_sum = 0
-            count = 0
-            for i in range(N):
-                for j in range(M):
-                    if disks[i][j] != 0:
-                        total_sum += disks[i][j]
-                        count += 1
-            
+            # 원판에 적힌 수의 평균을 구하고 평균보다 큰 수에서 -1, 작은 수에는 +1
+            avg, cnt = 0, 0
+            for i in range(1, n+1):
+                for j in range(m):
+                    if circles[i][j] != 0:
+                        cnt += 1
+                        avg += circles[i][j]
             # 원판에 남은 수가 있을 때만 평균 조정
-            if count > 0:
-                avg = total_sum / count
-                for i in range(N):
-                    for j in range(M):
-                        if disks[i][j] != 0:
-                            if disks[i][j] > avg:
-                                disks[i][j] -= 1
-                            elif disks[i][j] < avg:
-                                disks[i][j] += 1
-
-    # 4. 최종 합계 계산
-    final_sum = 0
-    for i in range(N):
-        final_sum += sum(disks[i])
-        
-    print(final_sum)
-
+            if cnt > 0: # 이 코드 없으면 ZeroDivisionError 난다.
+                avg /= cnt
+                for i in range(1, n+1):
+                    for j in range(m):
+                        if circles[i][j] == 0:
+                            continue
+                        if circles[i][j] < avg:
+                            circles[i][j] += 1
+                        elif circles[i][j] > avg:
+                            circles[i][j] -= 1
+    # 총합 구하기        
+    score = 0
+    for i in range(1, n+1):
+        score += sum(circles[i])
+    print(score)      
 solution()
