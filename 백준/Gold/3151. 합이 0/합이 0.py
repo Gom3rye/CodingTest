@@ -18,8 +18,10 @@ def solution():
                 three -= 1
             else: # result == 0:
                 if a[two] == a[three]:
-                    # 정렬되어 있는 상태니까 two인덱스 이후 a[three]의 개수는
-                    cnt += three-two
+                    # 정렬되어 있는 상태니까 two<->three 사이의 수들은 모두 a[two], a[three]와 같은 수
+                    combi = three-two+1
+                    cnt += combi*(combi-1)//2
+                    break
                 else: 
                     cnt += counter[a[three]]
                 two += 1
