@@ -5,16 +5,6 @@ def solution():
     board = [input().strip() for _ in range(n)]
     word = input().strip()
     directions = [(0,1),(0,-1),(1,0),(-1,0)]
-    if k != 1:
-        tmpk = 2
-        temp = []
-        while tmpk <= k:
-            for dx, dy in directions:
-                nx, ny = dx*tmpk, dy*tmpk
-                temp.append((nx, ny))
-            tmpk += 1
-        directions.extend(temp)
-
     wlen = len(word)
     dp = [[[-1]*wlen for _ in range(m)] for _ in range(n)]
     def dfs(x, y, idx):
@@ -26,9 +16,10 @@ def solution():
             return dp[x][y][idx]
         cnt = 0
         for dx, dy in directions:
-            nx, ny = dx+x, dy+y
-            if 0<=nx<n and 0<=ny<m and board[nx][ny] == word[idx+1]:
-                cnt += dfs(nx, ny, idx+1)
+            for i in range(1, k+1):
+                nx, ny = dx*i+x, dy*i+y
+                if 0<=nx<n and 0<=ny<m and board[nx][ny] == word[idx+1]:
+                    cnt += dfs(nx, ny, idx+1)
         # 계산된 결과를 dp 테이블에 저장
         dp[x][y][idx] = cnt
         return cnt
