@@ -1,29 +1,20 @@
-from collections import deque
-
-def generate_decreasing_numbers():
-    queue = deque()
-    result = []
-
-    for i in range(10):  # 한자리 줄어드는 수
-        queue.append(i)
-
-    while queue:
-        num = queue.popleft()
-        result.append(num)
-
-        last_digit = num % 10
-        for i in range(last_digit):
-            next_num = num * 10 + i
-            queue.append(next_num)
-
-    return sorted(result)
-
 def solution():
     N = int(input())
-    dec_nums = generate_decreasing_numbers()
-    if N > len(dec_nums):
+    result = []
+
+    def dfs(num, last_digit):
+        result.append(num)
+        for next_digit in range(last_digit):
+            dfs(num * 10 + next_digit, next_digit)
+
+    for i in range(10):
+        dfs(i, i)
+
+    result.sort()
+    
+    if N > len(result):
         print(-1)
     else:
-        print(dec_nums[N - 1])
+        print(result[N - 1])
 
 solution()
