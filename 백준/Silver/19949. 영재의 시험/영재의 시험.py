@@ -18,10 +18,9 @@ def solution():
         for choices in range(1, 6):
             if prev1 == prev2 == choices:
                 continue
-            if answer[idx] == choices:
-                total += dfs(idx+1, choices, prev1, score+1)
-            else:
-                total += dfs(idx+1, choices, prev1, score)
+            
+            nscore = score+1 if answer[idx] == choices else score
+            total += dfs(idx+1, choices, prev1, nscore)
 
         dp[idx][prev1][prev2][score] = total
         return total
