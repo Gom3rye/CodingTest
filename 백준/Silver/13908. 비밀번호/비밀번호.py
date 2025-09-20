@@ -1,25 +1,16 @@
 import sys
+from itertools import product
 input = sys.stdin.readline
 def solution():
     n, m = map(int, input().split())
     numbers = list(map(int, input().split()))
-    # 가능한 모든 비밀번호의 개수를 구하는 것이니까 백트레킹
-    pwd = []
+    # 가능한 모든 비밀번호의 개수를 구하는 것, 중복 순열
     cnt = 0
-    def backtracking(idx):
-        nonlocal cnt
-        if idx == n: # 자리수만큼 조합했을 경우
-            for num in numbers:
-                if num not in pwd:
-                    break
-            else:
-                cnt += 1
-            return
-        for num in range(10):
-            pwd.append(num)
-            backtracking(idx+1)
-            pwd.remove(num)
-            
-    backtracking(0)
+    for nums in product(range(10), repeat=n):
+        for num in numbers:
+            if num not in nums:
+                break
+        else:
+            cnt += 1
     print(cnt)
 solution()
