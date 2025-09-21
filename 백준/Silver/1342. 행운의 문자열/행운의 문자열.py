@@ -5,11 +5,10 @@ def solution():
     s = input().strip()
     result = set()
     for string in permutations(s):
-        for i in range(1, len(s)-1):
-            if string[i] == string[i+1] or string[i] == string[i-1]:
+        for i in range(1, len(s)):
+            if string[i] == string[i-1]:
                 break
         else:
-            lucky_string = ''.join(string)
-            result.add(lucky_string)
+            result.add(''.join(string))
     print(len(result))
 solution()
