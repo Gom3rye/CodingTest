@@ -1,28 +1,25 @@
 import sys
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(10**6)
 input = sys.stdin.readline
-
 def solution():
     n, k = map(int, input().split())
     result = []
-    count = [0]  # 리스트로 감싸서 참조 가능하게 함
-    found = [False]
-
-    def dfs(total, path):
-        if found[0]:
+    cnt = 0
+    def backtracking(total):
+        nonlocal cnt
+        # 합이 n을 초과하면 더 이상 탐색하면 안됌 (가지치기 필수!)
+        if total > n:
             return
         if total == n:
-            count[0] += 1
-            if count[0] == k:
-                print('+'.join(map(str, path)))
-                found[0] = True
+            cnt += 1
+            if cnt == k:
+                print('+'.join(map(str, result)))
+                sys.exit()
             return
-        for i in [1, 2, 3]:  # 사전순: 1 → 2 → 3
-            if total + i <= n:
-                dfs(total + i, path + [i])
-
-    dfs(0, [])
-    if not found[0]:
-        print(-1)
-
+        for num in [1,2,3]:
+            result.append(num)
+            backtracking(total+num)
+            result.pop()
+    backtracking(0)
+    print(-1)
 solution()
