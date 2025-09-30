@@ -5,10 +5,6 @@ def solution():
     h, n = map(int, input().split()) # 집 좌표(h,h), pc방 좌표(n,n)
     directions = [(0,1),(1,0)]
     l = abs(h-n) # len
-    # home == pc 좌표일때
-    if l == 0:
-        print(1)
-        return
     dp = [[-1]*(l+1) for _ in range(l+1)] # dp[i][j]: (i,j)를 갈 수 있는 경로의 수
     # (0, 0)~(l, l)까지 갈 수 있는 최단 경로의 수 구하기
     def dfs(x, y):
