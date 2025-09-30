@@ -1,11 +1,26 @@
 import sys
 input = sys.stdin.readline
+
 def solution():
     n, m = map(int, input().split())
     board = [list(map(int, input().split())) for _ in range(n)]
-    dp = [[0]*(m+1) for _ in range(n+1)] # i,j까지 오면서 얻을 수 있는 최대 자원 수
-    for i in range(1, n+1):
-        for j in range(1, m+1):
-            dp[i][j] = max(dp[i][j-1], dp[i-1][j])+board[i-1][j-1]
-    print(dp[-1][-1])
+    
+    dp = [[0]*m for _ in range(n)]
+    dp[0][0] = board[0][0]
+
+    # 첫 행
+    for j in range(1, m):
+        dp[0][j] = dp[0][j-1] + board[0][j]
+
+    # 첫 열
+    for i in range(1, n):
+        dp[i][0] = dp[i-1][0] + board[i][0]
+
+    # 나머지
+    for i in range(1, n):
+        for j in range(1, m):
+            dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + board[i][j]
+
+    print(dp[n-1][m-1])
+
 solution()
