@@ -1,28 +1,25 @@
 import sys
-sys.setrecursionlimit(10**9)
 input = sys.stdin.readline
 def solution():
-    h, n = map(int, input().split()) # 집 좌표(h,h), pc방 좌표(n,n)
-    directions = [(0,1),(1,0)]
-    l = abs(h-n) # len
-    dp = [[-1]*(l+1) for _ in range(l+1)] # dp[i][j]: (i,j)를 갈 수 있는 경로의 수
-    # (0, 0)~(l, l)까지 갈 수 있는 최단 경로의 수 구하기
-    def dfs(x, y):
-        # 위 삼각형은 침수 지역
-        if y > x:
-            return 0
-        if x == l and y == l:
-            return 1
-        if dp[x][y] != -1:
-            return dp[x][y]
-        
-        cnt = 0
-        for dx, dy in directions:
-            nx, ny = dx+x, dy+y
-            if 0<=nx<=l and 0<=ny<=l:
-                cnt += dfs(nx, ny)
-
-        dp[x][y] = cnt
-        return cnt
-    print(dfs(0, 0))
+    H, N = map(int, input().split())
+    d = abs(N - H)
+    if d == 0:
+        print(1)
+        return
+    
+    dp = [[0]*(d+1) for _ in range(d+1)]
+    dp[0][0] = 1
+    
+    for i in range(d+1):
+        for j in range(d+1):
+            if j > i:  # 침수 지역
+                dp[i][j] = 0
+                continue
+            if i == 0 and j == 0:
+                continue
+            ways_from_left = dp[i-1][j] if i > 0 else 0
+            ways_from_up = dp[i][j-1] if j > 0 else 0
+            dp[i][j] = ways_from_left + ways_from_up
+    
+    print(dp[d][d])
 solution()
