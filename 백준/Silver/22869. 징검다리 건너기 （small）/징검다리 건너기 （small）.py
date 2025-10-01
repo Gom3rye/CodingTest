@@ -1,32 +1,19 @@
-from collections import deque
-
+import sys
+input = sys.stdin.readline
 def solution():
-    import sys
-    input = sys.stdin.readline
-
-    N, K = map(int, input().split())
-    A = list(map(int, input().split()))
-
-    visited = [False] * N
-    queue = deque()
-    queue.append(0)
-    visited[0] = True
-
-    while queue:
-        cur = queue.popleft()
-
-        # 마지막 돌에 도달하면 성공
-        if cur == N - 1:
-            print("YES")
-            return
-
-        for nxt in range(cur + 1, N):
-            cost = (nxt - cur) * (1 + abs(A[cur] - A[nxt]))
-            if cost <= K and not visited[nxt]:
-                visited[nxt] = True
-                queue.append(nxt)
-
-    # 끝까지 도달 못했으면 실패
-    print("NO")
-
+    n, k = map(int, input().split())
+    arr = list(map(int, input().split()))
+    dp = [False]*n # dp[i]: i번 돌까지 도달할 수 있는지 여부
+    dp[0] = True
+    for i in range(n-1):
+        if not dp[i]: # i번 돌에 도달할 수 있어야만 다음 점프 고려
+            continue
+        for j in range(i+1, n):
+            power = (j-i)*(1+abs(arr[i]-arr[j]))
+            if power <= k:
+                dp[j] = True
+    if dp[-1]:
+        print("YES")
+    else:
+        print("NO")           
 solution()
