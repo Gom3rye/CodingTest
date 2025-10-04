@@ -2,14 +2,9 @@ import sys
 input = sys.stdin.readline
 def solution():
     n = int(input())
-    s = list(input().strip())
-    for i in range(n):
-        if s[i] == 'B':
-            s[i] = 0
-        elif s[i] == 'O':
-            s[i] = 1
-        else:
-            s[i] = 2
+    s = input().strip()
+    s = s.replace('B', '0').replace('O', '1').replace('J', '2')
+    s = list(map(int, s))
     dp = [float('inf')]*n # dp[i]: i번째 블럭을 갔을 때의 드는 최소 에너지
     dp[0] = 0
     for i in range(1, n): # i칸까지 오는 최소 비용 dp[i] 구하기
