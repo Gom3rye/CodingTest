@@ -14,9 +14,7 @@ def solution():
             if forbidden[i][j]:
                 continue
             for k in range(j+1, n+1):
-                if forbidden[i][k]:
-                    continue
-                if forbidden[j][k]:
+                if forbidden[i][k] or forbidden[j][k]:
                     continue
                 cnt += 1
                 # print(i, j, k)
