@@ -1,30 +1,40 @@
-import sys
+scroll = input().strip()
+devil = input().strip()
+angel = input().strip()
 
-input = lambda: sys.stdin.readline().rstrip()
-target = input()
-s1 = input()
-s2 = input()
+N = len(scroll)
+L = len(devil)
 
-dp = [[[0] * 2 for _ in range(len(target))] for _ in range(len(s1))]
+dp = [[[0]*2 for _ in range(L)] for _ in range(N)]
+prefix_sum = [[[0]*L for _ in range(2)] for _ in range(N)]
 
-for i in range(len(s1)):
-    if s1[i] == target[0]:
-        dp[i][0][0] = 1
-    if s2[i] == target[0]:
-        dp[i][0][1] = 1
+# 초기화
+for j in range(L):
+    if devil[j] == scroll[0]:
+        dp[0][j][0] = 1
+    if angel[j] == scroll[0]:
+        dp[0][j][1] = 1
 
-for i in range(len(s1)):
-    for j in range(1, len(target)):
-        if s1[i] == target[j]:
-            for k in range(i):
-                dp[i][j][0] += dp[k][j-1][1]
+    # 누적합 초기화
+    prefix_sum[0][0][j] = dp[0][j][0] + (prefix_sum[0][0][j-1] if j > 0 else 0)
+    prefix_sum[0][1][j] = dp[0][j][1] + (prefix_sum[0][1][j-1] if j > 0 else 0)
 
-        if s2[i] == target[j]:
-            for k in range(i):
-                dp[i][j][1] += dp[k][j-1][0]
+# DP + 누적합 계산
+for i in range(1, N):
+    for j in range(L):
+        if devil[j] == scroll[i]:
+            dp[i][j][0] = prefix_sum[i-1][1][j-1] if j > 0 else 0
+        if angel[j] == scroll[i]:
+            dp[i][j][1] = prefix_sum[i-1][0][j-1] if j > 0 else 0
 
-answer = 0
-for i in range(len(s1)):
-    answer += (dp[i][len(target)-1][0] + dp[i][len(target)-1][1])
+    # 누적합 갱신
+    for j in range(L):
+        prefix_sum[i][0][j] = dp[i][j][0] + (prefix_sum[i][0][j-1] if j > 0 else 0)
+        prefix_sum[i][1][j] = dp[i][j][1] + (prefix_sum[i][1][j-1] if j > 0 else 0)
 
-print(answer)
+# 정답 계산
+result = 0
+for j in range(L):
+    result += dp[N-1][j][0] + dp[N-1][j][1]
+
+print(result)
