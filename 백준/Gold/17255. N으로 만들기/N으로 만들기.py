@@ -6,7 +6,7 @@ def solution():
     answer = []
 
     def dfs(s, left, right, process): # string, left, right index, process
-        if s == n and left == 0 and right == l-1:
+        if left == 0 and right == l-1:
             if process not in answer:
                 answer.append(process)
             return
