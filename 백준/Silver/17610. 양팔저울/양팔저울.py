@@ -10,8 +10,7 @@ def solution():
         temp = set()
         for dp_v in dp:
             temp.add(dp_v+g)
-            if abs(dp_v-g) > 0:
-                temp.add(abs(dp_v-g))
+            temp.add(abs(dp_v-g))
         dp.update(temp)
     for i in range(1, total+1):
         if i not in dp:
