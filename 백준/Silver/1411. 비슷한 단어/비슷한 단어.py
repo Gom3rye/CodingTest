@@ -1,27 +1,26 @@
 import sys
-import math
-replace_word = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+input = sys.stdin.readline
 
-n = int(sys.stdin.readline())
+def is_similar(a, b):
+    map_ab = {}
+    map_ba = {}
+    for x, y in zip(a, b):
+        if x in map_ab and map_ab[x] != y:
+            return False
+        if y in map_ba and map_ba[y] != x:
+            return False
+        map_ab[x] = y
+        map_ba[y] = x
+    return True
 
-s_dict = {}
-for _ in range(n):
-    count = 0
-    s = sys.stdin.readline().rstrip()
+def solution():
+    n = int(input())
+    words = [input().strip() for _ in range(n)]
+    cnt = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            if is_similar(words[i], words[j]):
+                cnt += 1
+    print(cnt)
 
-    for i in range(len(s)):
-        if s[i].isupper():
-            continue
-        s = s.replace(s[i],replace_word[count])
-        count+=1
-
-    if s not in s_dict:
-        s_dict[s] = 1
-    else:
-        s_dict[s] +=1
-
-result = 0
-for v in s_dict.values():
-    result += math.comb(v,2)
-
-print(result)
+solution()
