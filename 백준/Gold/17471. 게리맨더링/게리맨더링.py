@@ -1,5 +1,5 @@
 import sys
-from collections import deque
+sys.setrecursionlimit(10**6)
 from itertools import combinations
 input = sys.stdin.readline
 def solution():
@@ -10,17 +10,17 @@ def solution():
         nodes = list(map(int, input().split()))
         graph[i] = nodes[1:]
 
+    def dfs(now, region, visited):
+        for nxt in graph[now]:
+            if nxt in region and nxt not in visited:
+                visited.add(nxt)
+                dfs(nxt, region, visited)
+        return visited
+
     def is_connected(region):
         # 노드들 연결 여부 파악하는 거니까 bfs/dfs
-        q = deque([next(iter(region))]) # set에서 아무 노드 1개 고름 (=list(az1)[0])
-        visited = {q[0]}
-        while q:
-            now = q.popleft()
-            for nxt in graph[now]:
-                if nxt in region and nxt not in visited:
-                    visited.add(nxt)
-                    q.append(nxt)
-        return region == visited
+        now = next(iter(region)) # 무작위 하나 고르기
+        return dfs(now, region, {now}) == region
 
     min_diff = float('inf')
     all_regions = set(range(1, n+1))
