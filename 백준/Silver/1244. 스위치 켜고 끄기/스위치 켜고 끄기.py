@@ -25,9 +25,9 @@ def solution():
     # 한 줄에 20개씩 출력
     if n > 20:
         for i in range(1, n+1):
-            if i != 1 and (i % 20) == 1:
-                print()
             print(status[i], end=' ')
+            if (i%20) == 0:
+                print()
     else:
         print(*status[1:])
 solution()
