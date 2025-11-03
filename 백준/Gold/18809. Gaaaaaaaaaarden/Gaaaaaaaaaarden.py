@@ -25,6 +25,7 @@ def solution():
             if visited[x][y][1] == 2: # 마지막에서 꽃이 된 경우
                 continue
             time = visited[x][y][0]
+
             for dx, dy in directions:
                 nx, ny = dx+x, dy+y
                 if not (0<=nx<n and 0<=ny<m):
@@ -36,8 +37,8 @@ def solution():
                     visited[nx][ny] = [time+1, type]
                     q.append((nx, ny, type))
                 # g에 r퍼진 칸 or r에 g퍼진 칸
-                elif (visited[nx][ny] == [time+1, 0] and type == 1) or (visited[nx][ny] == [time+1, 1] and type == 0):
-                    visited[nx][ny] = [time+1, 2]
+                elif visited[nx][ny][1] == type^1 and visited[nx][ny][0] == time+1:
+                    visited[nx][ny][1] = 2
                     flowers += 1
         return flowers
 
