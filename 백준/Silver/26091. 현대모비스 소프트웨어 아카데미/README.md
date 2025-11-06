@@ -12,11 +12,11 @@
 
 ### 제출 일자
 
-2025년 11월 6일 13:38:02
+2025년 11월 6일 13:40:21
 
 ### 문제 설명
 
-<p style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/582b9fa8-55f7-4f93-9f9f-507607aab82e/-/preview/" style="height: 300px; width: 399px;"></p>
+<p style="text-align: center;"><img alt="" src="" style="height: 300px; width: 399px;"></p>
 
 <blockquote>
 <p>현대모비스는 글로벌 자동차 부품 기업으로 자율주행, 커넥티비티, 전동화 분야에 역량을 집중해 스마트 모빌리티 시대를 선도하고 있는 기업입니다.</p>
