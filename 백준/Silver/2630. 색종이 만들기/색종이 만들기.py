@@ -6,13 +6,20 @@ def solution():
     board = [list(map(int, input().split())) for _ in range(n)]
     # white: 0, blue: 1
     white_squares, blue_squares = 0, 0
+    def is_valid(r, c, size):
+        first_color = board[r][c]
+        for i in range(r, r+size):
+            for j in range(c, c+size):
+                if board[i][j] != first_color:
+                    return False
+        return True
     def make_half(r, c, size): # 내가 맡은 구역의 시작행, 열, 한 변의 길이
         nonlocal white_squares, blue_squares
-        total = sum(board[i][j] for i in range(r, r+size) for j in range(c, c+size))
-        if total == size**2:
-            blue_squares += 1
-        elif total == 0:
-            white_squares += 1
+        if is_valid(r, c, size):
+            if board[r][c] == 1:
+                blue_squares += 1
+            elif board[r][c] == 0:
+                white_squares += 1
         else:
             # 4사분면으로 재귀 다시 돌리기
             size //= 2
