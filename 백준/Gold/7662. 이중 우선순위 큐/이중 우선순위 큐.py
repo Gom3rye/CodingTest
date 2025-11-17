@@ -1,53 +1,40 @@
-import sys
-import heapq
+import sys, heapq
+from collections import defaultdict
 input = sys.stdin.readline
-
-T = int(input())
-
-for _ in range(T):
-    k = int(input())
-    min_h = []
-    max_h = []
-    count = dict()
-
-    for __ in range(k):
-        cmd, num = input().split()
-        num = int(num)
-
-        if cmd == 'I':
-            # insert
-            heapq.heappush(min_h, num)
-            heapq.heappush(max_h, -num)
-            count[num] = count.get(num, 0) + 1
-
-        else:  # cmd == "D"
-            if num == -1:
-                # delete min
-                while min_h and count.get(min_h[0], 0) == 0:
-                    heapq.heappop(min_h)
-
-                if min_h:
-                    v = heapq.heappop(min_h)
-                    count[v] -= 1
-
-            else:
-                # delete max
-                while max_h and count.get(-max_h[0], 0) == 0:
-                    heapq.heappop(max_h)
-
-                if max_h:
-                    v = -heapq.heappop(max_h)
-                    count[v] -= 1
-
-    # 최종 정리
-    # lazy deletion 마무리
-    while min_h and count.get(min_h[0], 0) == 0:
-        heapq.heappop(min_h)
-
-    while max_h and count.get(-max_h[0], 0) == 0:
-        heapq.heappop(max_h)
-
-    if not min_h or not max_h:
-        print("EMPTY")
-    else:
-        print(-max_h[0], min_h[0])
+def solution():
+    # q에 저장된 데이터 중 최댓값과 최솟값 출력
+    t = int(input())
+    for _ in range(t):
+        k = int(input()) # 연산의 개수
+        minq, maxq = [], [] # laxy deletion 사용
+        counter = defaultdict(int)
+        for _ in range(k):
+            op, num = input().split()
+            num = int(num)
+            if op == 'I':
+                counter[num] += 1
+                heapq.heappush(minq, num)
+                heapq.heappush(maxq, -num)
+            else: # op == 'D'
+                if num == -1: # 최솟값 삭제
+                    # max heap에서 삭제된 값은 똑같이 삭제해주기
+                    while minq and counter[minq[0]] == 0:
+                        heapq.heappop(minq)
+                    # 새로운 값 삭제해주기
+                    if minq:
+                        counter[heapq.heappop(minq)] -= 1
+                else: # 최댓값 삭제 maxq에 -붙이는 거 잊지 말기!
+                    while maxq and counter[-maxq[0]] == 0:
+                        heapq.heappop(maxq)
+                    if maxq:
+                        counter[-heapq.heappop(maxq)] -= 1
+        
+        while minq and counter[minq[0]] == 0:
+            heapq.heappop(minq)
+        while maxq and counter[-maxq[0]] == 0:
+            heapq.heappop(maxq)
+        if not minq or not maxq:
+            print('EMPTY')
+        else:
+            print(-maxq[0], minq[0])
+solution()
