@@ -8,13 +8,10 @@ def solution():
     for _ in range(m):
         order = list(map(int, input().split()))
         cnt = order[0]
-        if cnt == 1:
-            continue
-        prev = order[1]
-        for nxt in order[2:]:
-            indegree[nxt] += 1
+        for singer in range(1, order[0]):
+            prev, nxt = order[singer], order[singer+1]
             graph[prev].append(nxt)
-            prev = nxt
+            indegree[nxt] += 1
     
     q = deque()
     for i in range(1, n+1):
