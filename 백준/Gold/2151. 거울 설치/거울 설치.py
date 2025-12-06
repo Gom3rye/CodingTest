@@ -28,11 +28,10 @@ def solution():
         for d in range(4):
             q.append((sx, sy, d))
             distance[sx][sy][d] = 0
-        answer = []
+        
         while q:
             x, y, d = q.popleft()
-            if (x,y) == (ex,ey):
-                answer.append(distance[x][y][d])
+            if (x,y) == (ex,ey): # 마지막 문에 도착
                 continue
                 
             nx, ny = x+dx[d], y+dy[d]
@@ -52,6 +51,6 @@ def solution():
                     if distance[nx][ny][nd] > distance[x][y][d]+1:
                         distance[nx][ny][nd] = distance[x][y][d]+1
                         q.append((nx, ny, nd))
-        return min(answer)
+        return min(distance[ex][ey])
     print(bfs(doors))
 solution()
