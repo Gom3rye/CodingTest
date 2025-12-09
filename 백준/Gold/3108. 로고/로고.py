@@ -1,83 +1,48 @@
 import sys
+from itertools import combinations
 input = sys.stdin.readline
-
-# -------------------------------------------------------
-# 직사각형 클래스
-# -------------------------------------------------------
-class Rect:
-    def __init__(self, x1, y1, x2, y2):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-
-    # 두 직사각형이 "외부 포함 없이" 닿거나 겹치는지 확인
-    def intersects(self, other):
-        # 1) 한쪽이 다른 쪽 내부에 완전히 포함되면 false
-        if (self.x1 < other.x1 and self.y1 < other.y1 and
-            self.x2 > other.x2 and self.y2 > other.y2):
+def solution():
+    # 직사각형 n개를 그리는데 필요한 pu명령(펜을 떼는 것)의 최솟값 구하기
+    n = int(input()) # 직사각형의 개수 <=1000
+    # 0,0에서 펜을 내린 채 출발하는 거니까 0,0(점)인 rect도 넣어주기
+    rectangles = [[0,0,0,0]]+[list(map(int, input().split())) for _ in range(n)]
+    parents = list(range(n+1))
+    def find(x):
+        if parents[x] != x:
+            parents[x] = find(parents[x])
+        return parents[x]
+    def union(a, b):
+        a = find(a)
+        b = find(b)
+        if a != b:
+            parents[b] = a
+    # 좌표가 겹치면 pu명령 추가 없이 직사각형을 그릴 수 있으므로 겹치는지 여부 조사
+    def meet(recta, rectb):
+        ax1, ay1, ax2, ay2 = recta
+        bx1, by1, bx2, by2 = rectb
+        
+        # 두 직사각형이 서로 떨어져 있는 경우
+        if ax2 < bx1 or ay2 < by1 or bx2 < ax1 or by2 < ay1:
             return False
-
-        if (other.x1 < self.x1 and other.y1 < self.y1 and
-            other.x2 > self.x2 and other.y2 > self.y2):
+        # 한 직사각형이 다른 직사각형을 포함하고 있는 경우
+        # a가 바깥 - b가 안
+        if ax1 < bx1 and ay1 < by1 and bx2 < ax2 and by2 < ay2:
             return False
-
-        # 2) 겹치지 않는 경우 false
-        if self.x2 < other.x1:  # self가 왼쪽
+        # b가 바깥 - a가 안
+        if bx1 < ax1 and by1 < ay1 and ax2 < bx2 and ay2 < by2:
             return False
-        if other.x2 < self.x1:  # other가 왼쪽
-            return False
-        if self.y2 < other.y1:  # self가 아래
-            return False
-        if other.y2 < self.y1:  # other가 아래
-            return False
-
-        # 3) 나머지는 모두 겹침 또는 접함
+        
         return True
 
+    for comb in combinations(range(n+1), 2):
+        a, b = comb
+        # 두 사각형이 겹치면 union
+        if meet(rectangles[a], rectangles[b]):
+            union(a, b)
 
-# -------------------------------------------------------
-# Union-Find
-# -------------------------------------------------------
-def find(x):
-    if uf[x] != x:
-        uf[x] = find(uf[x])
-    return uf[x]
-
-def union(a, b):
-    ra = find(a)
-    rb = find(b)
-    if ra != rb:
-        uf[rb] = ra
-
-
-# -------------------------------------------------------
-# 입력 처리 / 초기화
-# -------------------------------------------------------
-N = int(input())
-rects = [Rect(0, 0, 0, 0)]  # 인덱스 0 = 시작점(0,0) 가상 직사각형
-
-for _ in range(N):
-    x1, y1, x2, y2 = map(int, input().split())
-    rects.append(Rect(x1, y1, x2, y2))
-
-uf = [i for i in range(N + 1)]
-
-# -------------------------------------------------------
-# 모든 쌍 체크하여 Union
-# -------------------------------------------------------
-for i in range(N + 1):
-    for j in range(i + 1, N + 1):
-        if rects[i].intersects(rects[j]):
-            union(i, j)
-
-# Find로 부모 갱신
-for i in range(N + 1):
-    uf[i] = find(uf[i])
-
-# -------------------------------------------------------
-# 그룹 개수 세기
-# -------------------------------------------------------
-# (0,0) 그룹 하나는 제외
-answer = len(set(uf)) - 1
-print(answer)
+    # 모든 부모 루트로 압축
+    for i in range(n+1):
+        parents[i] = find(i)
+    root_set = set(parents)
+    print(len(root_set)-1) # 0그룹 하나 제거
+solution()
