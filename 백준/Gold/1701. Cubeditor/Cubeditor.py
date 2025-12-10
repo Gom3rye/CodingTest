@@ -2,21 +2,23 @@ import sys
 input = sys.stdin.readline
 def solution():
     s = input().strip()
-    n = len(s) # <=5000 -> n^3이면 시간초과 따라서 O(n^2)인 kmp 쓰기
-    answer = 0
-    # 모든 접미사에 대해 kmp 배열 생성
-    for start in range(n):
-        pi = [0]*(n-start)
-        j = 0 # 현재까지 연속으로 일치한 접두사 길이
-        # 접미사 문자열
-        sub = s[start:]
-        for i in range(1, len(sub)): # i: 우측 인덱스
-            while j > 0 and sub[i] != sub[j]:
-                j = pi[j-1] # 이전 최장길이로 돌아가기
-
-            if sub[i] == sub[j]:
-                j += 1
-                pi[i] = j
-                answer = max(answer, j)
+    n = len(s)
+    start, end, answer = 1, n-1, 0 # 가능한 최소 길이, 최대 길이, 정답
+    while start <= end:
+        mid = (start+end)//2 # 패턴 길이
+        possible = set()
+        # mid 길이만큼의 패턴들을 모두 저장 한 후 곂치는 게 있는지 확인
+        for start_idx in range(n-mid+1):
+            pattern = s[start_idx:start_idx+mid]
+            if pattern in possible:
+                answer = max(answer, mid)
+                break # mid길이만큼의 패턴 찾았으니까 다른 mid로 넘어가기
+            possible.add(pattern)
+        else:
+            # 맞는 패턴이 없는 거니까 길이 줄이기
+            end = mid -1
+            continue
+        # 중복이 있었을 때) start를 오른쪽으로 밀면서 더 긴 패턴 있나 탐색
+        start = mid + 1
     print(answer)
 solution()
