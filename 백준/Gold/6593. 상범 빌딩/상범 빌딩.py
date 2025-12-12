@@ -1,55 +1,41 @@
 import sys
 from collections import deque
-
 input = sys.stdin.readline
-
-while True:
-    L, R, C = map(int, input().split())
-    if L == 0 and R == 0 and C == 0:
-        break
-
-    building = []
-    start = None
-
-    for l in range(L):
-        floor = []
-        for r in range(R):
-            row = list(input().rstrip())
-            for c in range(C):
-                if row[c] == 'S':
-                    start = (l, r, c)
-            floor.append(row)
-        building.append(floor)
-        input()  # 빈 줄
-
-    # BFS 준비
-    dz = [1, -1, 0, 0, 0, 0]
-    dx = [0, 0, 1, -1, 0, 0]
-    dy = [0, 0, 0, 0, 1, -1]
-
-    visited = [[[False]*C for _ in range(R)] for _ in range(L)]
-    q = deque()
-    sz, sx, sy = start
-    q.append((sz, sx, sy, 0))
-    visited[sz][sx][sy] = True
-
-    escaped = False
-
-    while q:
-        z, x, y, dist = q.popleft()
-
-        if building[z][x][y] == 'E':
-            print(f"Escaped in {dist} minute(s).")
-            escaped = True
+def solution():
+    while True:
+        l, r, c = map(int, input().split()) # 상범 빌딩의 층수, 행, 열
+        if (l, r, c) == (0, 0, 0):
             break
 
-        for i in range(6):
-            nz, nx, ny = z + dz[i], x + dx[i], y + dy[i]
+        board = []
+        for _ in range(l):
+            floor = [list(input().strip()) for _ in range(r)]
+            tmp = input().strip()
+            board.append(floor)
 
-            if 0 <= nz < L and 0 <= nx < R and 0 <= ny < C:
-                if not visited[nz][nx][ny] and building[nz][nx][ny] != '#':
-                    visited[nz][nx][ny] = True
-                    q.append((nz, nx, ny, dist + 1))
+        for i in range(l):
+            for j in range(r):
+                for k in range(c):
+                    if board[i][j][k] == 'S':
+                        sz, sx, sy = i, j, k
+                    elif board[i][j][k] == 'E':
+                        ez, ex, ey = i, j, k
+        
+        directions = [(0,0,1),(0,0,-1),(0,1,0),(0,-1,0),(-1,0,0),(1,0,0)]
+        q = deque([(sz, sx, sy)])
+        distance = [[[-1]*c for _ in range(r)] for _ in range(l)]
+        distance[sz][sx][sy] = 0
+        while q:
+            z, x, y = q.popleft()
+            if (z, x, y) == (ez, ex, ey):
+                print(f"Escaped in {distance[z][x][y]} minute(s).")
+                break
+            for dz, dx, dy in directions:
+                nz, nx, ny = dz+z, dx+x, dy+y
+                if 0<=nz<l and 0<=nx<r and 0<=ny<c and board[nz][nx][ny] != '#' and distance[nz][nx][ny] == -1:
+                    distance[nz][nx][ny] = distance[z][x][y]+1
+                    q.append((nz, nx, ny))
+        else:
+            print("Trapped!")
 
-    if not escaped:
-        print("Trapped!")
+solution()
