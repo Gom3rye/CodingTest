@@ -1,71 +1,71 @@
 import sys
 from collections import deque
 input = sys.stdin.readline
-
 def solution():
-    T = int(input())
-    for _ in range(T):
-        n = int(input())
-        last_rank = list(map(int, input().split()))
-        
-        # 그래프 초기화
+    t = int(input())
+    for _ in range(t): # <=100
+        n = int(input()) # 팀의 수 <=500
+        last_rankings = list(map(int, input().split()))
+        # 순서가 있는 DAG -> 위상정렬
+        # 누가 누구 앞인지 모든 순서 관계를 저장하는 graph (이를 근거로 indegree 변화시키는 것, graph[a][b] = True면 a가 b보다 놓은 등수인것)
         graph = [[False]*(n+1) for _ in range(n+1)]
         indegree = [0]*(n+1)
-        
-        # 작년 순위 기준으로 DAG 구성
         for i in range(n):
             for j in range(i+1, n):
-                a = last_rank[i]
-                b = last_rank[j]
-                graph[a][b] = True
+                a, b = last_rankings[i], last_rankings[j]
+                graph[a][b] = True # 순서 관계 저장
                 indegree[b] += 1
         
-        m = int(input())
+        m = int(input()) # 순위 변동한 쌍 <=25000
+        if m == 0:
+            print(*last_rankings)
+            continue
+    
+        # 간선 뒤집기
         for _ in range(m):
             a, b = map(int, input().split())
-            # 기존 방향이 a->b였다면 → 뒤집기
+            # (a, b) 사이 누가 더 높게 바뀌었다가 아니라 그냥 둘의 간선이 바뀌었다의 정보만 주는 거 주의!!!
             if graph[a][b]:
                 graph[a][b] = False
                 graph[b][a] = True
-                indegree[b] -= 1
                 indegree[a] += 1
-            else:
-                graph[b][a] = False
+                indegree[b] -= 1
+            else: # graph[b][a]:
                 graph[a][b] = True
+                graph[b][a] = False
                 indegree[a] -= 1
                 indegree[b] += 1
-        
-        # 위상정렬
+
+        # print(graph)
+        # print(indegree)
         q = deque()
         for i in range(1, n+1):
             if indegree[i] == 0:
                 q.append(i)
-        
-        result = []
-        certain = True
-        impossible = False
-        
-        for _ in range(n):
-            if not q:  # 사이클 존재
-                impossible = True
-                break
-            
-            if len(q) > 1:  # 순위 여러 개 가능 → 확정 불가
-                certain = False
-            
+
+        answer = []
+        uncertain = False # ? 판단
+        count = 0
+        while q:
             now = q.popleft()
-            result.append(now)
+            count += 1
+            answer.append(now)
+            # indegree 0인건 1개여야 하고 1개를 꺼냈으니까 0이어야 한다.
+            if len(q) > 0:
+                uncertain = True
+                break
+            # 다음 노드 찾기
             for nxt in range(1, n+1):
                 if graph[now][nxt]:
                     indegree[nxt] -= 1
                     if indegree[nxt] == 0:
                         q.append(nxt)
-        
-        if impossible:
+
+        if count < n: # 차례대로 indegree가 0인거 n개만큼 돌아야 하는데 중간에 큐가 비어 버렸다는 소리니까 사이클 확정(impossible)
             print("IMPOSSIBLE")
-        elif not certain:
+        elif uncertain:
             print("?")
         else:
-            print(*result)
+            print(*answer)
 
 solution()
