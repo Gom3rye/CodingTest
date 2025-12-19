@@ -4,21 +4,17 @@ input = sys.stdin.readline
 def solution():
     t = int(input()) # test case <=20
     for _ in range(t):
-        strings = list(input().split())
-        strings = "".join(strings) # len <=255
+        strings = input().strip().replace(" ", "") # len <=255
         counter = Counter(strings).most_common()
-        # 한 문자로만 이루어졌으면 그 알파벳 출력하면 됨
-        if len(counter) == 1:
-            print(counter[0][0])
-            continue
-        answer = counter[0][0]
-        max_cnt = counter[0][1]
-        for char, cnt in counter[1:]:
-            if cnt == max_cnt:
-                print("?")
+        max_cnt, answer, question = 0, '', False
+        for char, cnt in counter:
+            if cnt > max_cnt:
+                answer = char
+                max_cnt = cnt
+            elif cnt == max_cnt:
+                answer = '?'
                 break
             else:
-                print(answer)
                 break
-        
+        print(answer)
 solution()
