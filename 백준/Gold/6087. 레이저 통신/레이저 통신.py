@@ -1,40 +1,50 @@
-from collections import deque
 import sys
-input=sys.stdin.readline
-
-W,H=map(int,input().split())
-lst=tuple(list(input()) for _ in range(H))
-visit=tuple([0]*W for _ in range(H))
-dv=((-1,0),(1,0),(0,-1),(0,1)) #상하좌우 0123
-dv_dic={0:(0,2,3),1:(1,2,3),2:(0,1,2),3:(0,1,3),4:(0,1,2,3)} #이전 이동방향에 따라 현재 어디로 방향을 바꿀 수 있는지를 dictionary로 저장
-C_rot=[]
-for Y in range(H):
-        for X in range(W):
-            if lst[Y][X]=='C':
-                C_rot.append((Y,X))
-y,x=C_rot[0]
-min_n=10000
-queue=deque()
-queue.append((y,x,4,0)) # 0은 방문 구분, chg=거울개수+1개를 의미, 4번은 초기화
-visit[y][x]=1 #첫 시작점은 1로 초기화
-while queue:
-    y,x,dir,chg=queue.popleft()
-    if (y,x)==C_rot[1]:
-        min_n=min(min_n,chg)
-        break
-    for i in dv_dic[dir]:
-        a=chg
-        dy=y+dv[i][0]
-        dx=x+dv[i][1]
-        if dir!=i: #만약 방향을 바꾼다면 거울 +1
-            a+=1
-        while True:
-            if 0<=dy<H and 0<=dx<W and lst[dy][dx]!='*': # 벽이 아니거나 dy, dx가 범위 이내라면 
-                if not visit[dy][dx]: # 방문한 적이 없다면
-                    visit[dy][dx]=a  # 현재 만난 거울의 수를 저장 
-                    queue.append((dy,dx,i,a))
-                dy+=dv[i][0] #레이저이므로 쭉 직진
-                dx+=dv[i][1]
-            else:
-                break
-print(min_n-1)
+from collections import deque
+input = sys.stdin.readline
+def solution():
+    w, h = map(int, input().split()) #<=100
+    board = [list(input().strip()) for _ in range(h)]
+    # 거울의 최솟값 구하기
+    lasers = []
+    for i in range(h):
+        for j in range(w):
+            if board[i][j] == 'C':
+                lasers.append((i, j))
+    sx, sy = lasers[0] # start point
+    ex, ey = lasers[1] # end point
+    dx = [0, 0, -1, 1]
+    dy = [-1, 1, 0, 0] # 왼,우,상,하
+    
+    INF = float('inf')
+    q = deque()
+    for dir in range(4):
+        q.append((sx, sy, dir))
+    # 상태 수: 100^2*4 = 4만 (각기 다른 좌표마다 4방향으로 들어올 수 있음)
+    visited = [[[INF]*4 for _ in range(w)] for _ in range(h)]
+    for dir in range(4):
+        visited[sx][sy][dir] = 0
+    while q:
+        x, y, dir = q.popleft()
+        if (x, y) == (ex, ey): # 도착지에 도착
+            continue
+        
+        for ndir in range(4):
+            nx, ny = x+dx[ndir], y+dy[ndir]
+            if not (0<=nx<h and 0<=ny<w):
+                continue
+            if board[nx][ny] == '*':
+                continue
+            # 레이저로 나올 수 없는 방향 패쓰
+            if (dir, ndir) in [(0,1), (1,0), (2,3), (3,2)]:
+                continue
+            cost = visited[x][y][dir]+(dir != ndir) # 안 같으면 +1, 같으면 +0
+            if visited[nx][ny][ndir] > cost:
+                visited[nx][ny][ndir] = cost
+                if dir == ndir: # 직진하는 경우
+                    q.appendleft((nx, ny, ndir))
+                else: # 레이저 놓는 경우
+                    q.append((nx, ny, ndir))
+    
+    answer = min(visited[ex][ey])
+    print(answer)
+solution()
