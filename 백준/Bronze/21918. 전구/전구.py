@@ -8,13 +8,10 @@ def solution():
         if a == 1:
             status[b] = c
         elif a == 2:
-            for i in range(b, c+1):
-                status[i]^=1 # toggle
+            status[b:c+1] = [i^1 for i in status[b:c+1]]
         elif a == 3:
-            for i in range(b, c+1):
-                status[i] = 0
+            status[b:c+1] = [0]*(c-b+1)
         else:
-            for i in range(b, c+1):
-                status[i] = 1
+            status[b:c+1] = [1]*(c-b+1)
     print(*status[1:])
 solution()
