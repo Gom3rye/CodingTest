@@ -25,9 +25,13 @@ def solution():
             edges.append((cost, p1[-1], p2[-1])) # planet의 idx 넣기
     edges.sort()
     answer = 0
+    cnt = 0
     for cost, a, b in edges:
         if find(a) != find(b):
             union(a, b)
             answer += cost
+            cnt += 1
+            if cnt == n-1: # 다 연결된거면
+                break
     print(answer)
 solution()
