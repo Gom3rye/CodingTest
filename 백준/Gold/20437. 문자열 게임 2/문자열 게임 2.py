@@ -8,9 +8,6 @@ def solution():
         w = input().strip() # len(w) <=10,000
         counter = Counter(w)
         k = int(input()) # 특정 문자가 나와야 하는 횟수
-        if not any(cnt>=k for cnt in counter.values()):
-            print(-1)
-            continue
         n = len(w)
         # 문자열 하나를 통째로 보지 말고 문자의 출연 '지점'을 보자!
         char_dict = defaultdict(list)
@@ -24,13 +21,12 @@ def solution():
             size = len(char_dict[char])
             if size >= k:
                 spots = char_dict[char]
-                start = 0
-                end = start+k-1
-                while end < size: # 2<5
-                    length = spots[end]-spots[start]+1
+                for start in range(size-k+1): # 2<5
+                    length = spots[start+k-1]-spots[start]+1
                     min_length = min(min_length, length)
                     max_length = max(max_length, length)
-                    start += 1
-                    end += 1
-        print(min_length, max_length)
+        if min_length == float('inf'):
+            print(-1)
+        else:
+            print(min_length, max_length)
 solution()
