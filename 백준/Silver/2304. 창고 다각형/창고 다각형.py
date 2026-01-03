@@ -12,28 +12,18 @@ def solution():
             max_height = pillars[i][1]
             max_idx = i # max_height가 여러 개 있을 때 제일 오른쪽에 있는 max_height의 x좌표를 구하자
     answer = 0
-    left_stack = [] # 지붕이 될 (x, y) 저장
-    for i in range(max_idx+1): # 0 ~ max_idx까지
-        x, y = pillars[i]
-        if left_stack and left_stack[-1][1] > y:
-            continue
-        left_stack.append((x, y))
-    # print(left_stack)
-    for i in range(len(left_stack)-1):
-        width = left_stack[i+1][0]-left_stack[i][0]
-        height = left_stack[i][1]
-        answer += width*height
-    # print(pillars)
-    right_stack = []
-    for i in range(n-1, max_idx-1, -1): # max_idx ~ n-1까지
-        x, y = pillars[i]
-        if right_stack and right_stack[-1][1] > y:
-            continue
-        right_stack.append((x, y))
-    # print(right_stack)
-    for i in range(len(right_stack)-1):
-        width = right_stack[i][0]-right_stack[i+1][0]
-        height = right_stack[i][1]
-        answer += width*height
+    # 구현 ver.
+    # 왼쪽 면적 구하기
+    now_h = 0
+    for i in range(max_idx+1):
+        if i > 0:
+            answer += (pillars[i][0]-pillars[i-1][0])*now_h
+        now_h = max(now_h, pillars[i][1])
+    # 오른쪽 면적 구하기
+    now_h = 0
+    for i in range(n-1, max_idx-1, -1):
+        if i < n-1:
+            answer += (pillars[i+1][0]-pillars[i][0])*now_h
+        now_h = max(now_h, pillars[i][1])
     print(answer+max_height) # max_height 한 기둥 뺀 거 더해주기
 solution()
