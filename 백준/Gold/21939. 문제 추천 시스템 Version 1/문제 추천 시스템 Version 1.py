@@ -1,52 +1,46 @@
-import sys
-import heapq
+import sys, heapq
+
 input = sys.stdin.readline
 
 def solution():
-    N = int(input())
+    n = int(input())
+    minq, maxq = [], []
+    # in_list[문제번호] = 난이도 로 저장하여 현재 유효한 난이도를 관리
+    in_list = {} 
     
-    min_heap = []
-    max_heap = []
-    alive = {}
+    for _ in range(n):
+        p, l = map(int, input().split())
+        heapq.heappush(minq, (l, p))
+        heapq.heappush(maxq, (-l, -p))
+        in_list[p] = l
     
-    for _ in range(N):
-        P, L = map(int, input().split())
-        heapq.heappush(min_heap, (L, P))
-        heapq.heappush(max_heap, (-L, -P))
-        alive[P] = L
-    
-    M = int(input())
-    
-    for _ in range(M):
-        cmd = input().split()
+    m = int(input())
+    for _ in range(m):
+        command = input().split()
         
-        if cmd[0] == "add":
-            P, L = int(cmd[1]), int(cmd[2])
-            heapq.heappush(min_heap, (L, P))
-            heapq.heappush(max_heap, (-L, -P))
-            alive[P] = L
-        
-        elif cmd[0] == "solved":
-            P = int(cmd[1])
-            del alive[P]
-        
-        else:  # recommend
-            x = int(cmd[1])
+        if command[0] == 'add':
+            p, l = int(command[1]), int(command[2])
+            # 동일한 문제 번호가 다른 난이도로 들어올 수 있으므로 갱신
+            heapq.heappush(minq, (l, p))
+            heapq.heappush(maxq, (-l, -p))
+            in_list[p] = l
             
-            if x == 1:
-                while True:
-                    L, P = max_heap[0]
-                    L, P = -L, -P
-                    if P in alive and alive[P] == L:
-                        print(P)
-                        break
-                    heapq.heappop(max_heap)
+        elif command[0] == 'recommend':
+            if command[1] == '1':
+                # maxq의 top에 있는 문제가 삭제되었거나, 난이도가 변경된 과거 데이터라면 pop
+                while maxq and (abs(maxq[0][1]) not in in_list or in_list[abs(maxq[0][1])] != abs(maxq[0][0])):
+                    heapq.heappop(maxq)
+                print(-maxq[0][1])
             else:
-                while True:
-                    L, P = min_heap[0]
-                    if P in alive and alive[P] == L:
-                        print(P)
-                        break
-                    heapq.heappop(min_heap)
+                # minq의 top에 있는 문제가 삭제되었거나, 난이도가 변경된 과거 데이터라면 pop
+                while minq and (minq[0][1] not in in_list or in_list[minq[0][1]] != minq[0][0]):
+                    heapq.heappop(minq)
+                print(minq[0][1])
+                
+        elif command[0] == 'solved':
+            p = int(command[1])
+            # dict에서 제거하여 힙의 Lazy Deletion(지연 삭제) 대상으로 만듦
+            if p in in_list:
+                del in_list[p]
 
 solution()
