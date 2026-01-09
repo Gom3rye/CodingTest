@@ -18,7 +18,7 @@ def solution():
     for _ in range(k): # <=1000
         for x in range(n): # <=10
             for y in range(n): # <=10
-                dead = []
+                dead = 0
                 new_tree = deque()
                 # 봄) 나이만큼 양분 먹고 나이 +1, 못하면 죽음
                 for year in tree[x][y]: # <=100
@@ -26,11 +26,10 @@ def solution():
                         nutrition[x][y] -= year
                         new_tree.append(year+1)
                     else: # 양분이 부족해 못 먹는다면
-                        dead.append(year) # 죽은 나무의 나이 저장
+                        dead += year//2
                 tree[x][y] = new_tree # 나무 갱신
                 # 여름) 죽은 나무가 양분으로 추가됨
-                for year in dead:
-                    nutrition[x][y] += year//2
+                nutrition[x][y] += dead
         for x in range(n):
             for y in range(n):
                 # 가을) 나이가 5의 배수면 인접 8칸에 나이1인 나무 번식함
