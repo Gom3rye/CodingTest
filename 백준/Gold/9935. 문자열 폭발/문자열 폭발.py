@@ -1,23 +1,16 @@
 import sys
 input = sys.stdin.readline
-
-s = input().rstrip()
-bomb = input().rstrip()
-bl = len(bomb)
-
-stack = []
-
-for ch in s:
-    stack.append(ch)
-    
-    # 스택의 뒤에서 bomb와 비교
-    if len(stack) >= bl:
-        if ''.join(stack[-bl:]) == bomb:
-            # 폭발
-            del stack[-bl:]
-
-# 출력
-if stack:
-    print(''.join(stack))
-else:
-    print("FRULA")
+def solution():
+    s = input().strip() # <= 1,000,000
+    explode = list(input().strip()) # <= 36
+    stack = []
+    n, last = len(explode), explode[-1]
+    for char in s:
+        stack.append(char)
+        while char == last and stack[-n:] == explode:
+            del stack[-n:]
+    if stack:
+        print("".join(stack))
+    else:
+        print("FRULA")
+solution()
