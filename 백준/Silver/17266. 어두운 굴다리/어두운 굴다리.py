@@ -7,13 +7,13 @@ def solution():
     answer, start, end = 0, 1, n
     while start <= end:
         mid = (start+end)//2 # 가로등의 최소 높이
-        stack = [0]
+        right = 0
         for x in lights:
-            if stack[-1] >= max(x-mid, 0):
-                stack.append(x+mid)
+            if right >= max(x-mid, 0):
+                right = x+mid
             else:
                 break
-        if stack[-1] >= n:
+        if right >= n:
             answer = mid
             end = mid-1
         else:
