@@ -9,16 +9,16 @@ def solution():
         if n == 0:
             break
         costs = [list(map(int, input().split())) for _ in range(n)]
-        dp = [[0]*3 for _ in range(n)]
         # 0,1에서만 출발 가능하니까 아래와 같이 초기화
-        dp[0][0] = INF
-        dp[0][1] = costs[0][1]
-        dp[0][2] = costs[0][1]+costs[0][2]
+        dp = [INF, costs[0][1], costs[0][1]+costs[0][2]]
         for i in range(1, n):
-            dp[i][0] = min(dp[i-1][0], dp[i-1][1])+costs[i][0]
-            dp[i][1] = min(min(dp[i-1]), dp[i][0])+costs[i][1]
-            dp[i][2] = min(dp[i-1][1], dp[i-1][2], dp[i][1])+costs[i][2]
-
-        print(f"{idx}. {dp[-1][1]}")
+            new_dp = [0]*3
+            left, mid, right = costs[i]
+            new_dp[0] = min(dp[0], dp[1])+left
+            new_dp[1] = min(min(dp), new_dp[0])+mid
+            new_dp[2] = min(dp[1], dp[2], new_dp[1])+right
+            # 한 줄씩 갱신
+            dp = new_dp
+        print(f"{idx}. {dp[1]}")
         idx += 1
 solution()
