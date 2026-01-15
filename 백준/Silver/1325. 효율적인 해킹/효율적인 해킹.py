@@ -1,49 +1,35 @@
 import sys
 from collections import deque
-
-# 빠른 입력을 위한 설정
 input = sys.stdin.readline
-
 def solution():
-    n, m = map(int, input().split())
-    
-    # B -> A 단방향 그래프
-    graph = [[] for _ in range(n + 1)]
+    n, m = map(int, input().split()) # #컴퓨터 <=10000, #관계 <=100,000
+    graph = [[] for _ in range(n+1)]
     for _ in range(m):
         a, b = map(int, input().split())
-        graph[b].append(a)
+        graph[b].append(a) # a->b신뢰, b를 해킹하면 a도 해킹할 수 있다.
 
-    counts = [0] * (n + 1)
-    max_count = 0
-
-    # 1번부터 N번까지 모든 컴퓨터를 시작점으로 하여 탐색
-    for i in range(1, n + 1):
-        # 재귀가 아닌 스택을 이용한 DFS
-        stack = [i]
-        visited = [False] * (n + 1)
+    def bfs(now):
+        q = deque([now])
+        visited = [False]*(n+1)
         visited[i] = True
-        count = 0
-        
-        while stack:
-            current_com = stack.pop()
-            count += 1
-            
-            for neighbor in graph[current_com]:
-                if not visited[neighbor]:
-                    visited[neighbor] = True
-                    stack.append(neighbor)
-        
-        # 각 시작점별 해킹 수를 저장하고, 실시간으로 최댓값을 갱신
-        counts[i] = count
-        if count > max_count:
-            max_count = count
-    
-    # 결과 출력
-    result = []
-    for i in range(1, n + 1):
-        if counts[i] == max_count:
-            result.append(i)
-    
-    print(*result)
+        cnt = 1
+        while q:
+            now = q.popleft()
+            for nxt in graph[now]:
+                if not visited[nxt]:
+                    visited[nxt] = True
+                    cnt += 1
+                    q.append(nxt)
+        return cnt
 
+    answer = []
+    max_cnt = 0
+    for i in range(1, n+1):
+        cnt = bfs(i)
+        if max_cnt < cnt:
+            max_cnt = cnt
+            answer = [i]
+        elif max_cnt == cnt:
+            answer.append(i)
+    print(*answer)
 solution()
