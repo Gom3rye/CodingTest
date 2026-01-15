@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+from bisect import bisect_left
 input = sys.stdin.readline
 def solution():
     m, n = map(int, input().split()) # #우주 <=100, #행성 <=10000
@@ -9,9 +10,7 @@ def solution():
     for _ in range(m):
         universe = list(map(int, input().split()))
         # 크기로 랭킹을 매길 거니까 같은 숫자 없도록 set으로 받아주기
-        sorted_universe = sorted(set(universe))
-        # 이때 중요한 건(알고싶은 거) idx(순위)니까 rankings[size] = idx로 딕셔너리 초기화!
-        rankings = {size: idx for idx, size in enumerate(sorted_universe)}
+        rankings = {size: bisect_left(universe, size) for size in universe}
         pattern[tuple(rankings[size] for size in universe)] += 1
     
     cnt = 0
