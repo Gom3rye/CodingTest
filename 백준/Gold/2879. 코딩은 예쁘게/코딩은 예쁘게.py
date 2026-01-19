@@ -5,18 +5,14 @@ def solution():
     now = list(map(int, input().split()))
     target = list(map(int, input().split()))
     # 변화량 차이를 기록하는 배열 만들기
-    diff = [0]+[target[i]-now[i] for i in range(n)]
+    diff = [0]+[target[i]-now[i] for i in range(n)]+[0]
     # diff 배열을 0으로 만들기 위한 최소 횟수 구하기 -> 인접 값들의 변화량만 관찰하면 된다.
-    min_cost = float('inf')
-    neg, pos = 0, 0
-    for i in range(1, n+1):
-        # 이전 줄과의 차이 변화량 관찰
+    min_cost = 0
+    nd = len(diff)
+    for i in range(1, nd):
         change = diff[i]-diff[i-1]
-        if change < 0:
-            neg -= change # 음수니까 빼줘야 +효과
-        else:
-            pos += change
-    # 늘리는 작업과 줄이는 작업은 서로 다른 방향, 두 작업 중 더 많이 필요한 쪽이 전체를 포괄한다.
-    min_cost = max(neg, pos)
+        if change > 0:
+            # 변화가 발생했다는 거니까 횟수에 추가해야 한다.
+            min_cost += change
     print(min_cost)
 solution()
