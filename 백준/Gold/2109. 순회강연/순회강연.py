@@ -8,10 +8,8 @@ def solution():
     infos.sort(key=lambda x: x[1])
     q = []
     for pay, deadline in infos:
-        if len(q) >= deadline:
-            heapq.heappush(q, pay)
+        heapq.heappush(q, pay)
+        if len(q) > deadline:
             heapq.heappop(q) # 가장 작은 거 하나 빼기
-        else:
-            heapq.heappush(q, pay)
     print(sum(q))
 solution()
