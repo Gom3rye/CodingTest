@@ -1,38 +1,26 @@
-from collections import Counter
 import sys
+from collections import Counter
 input = sys.stdin.readline
-
 def solution():
-    T = int(input())
-    n = int(input())
-    A = list(map(int, input().split()))
-    m = int(input())
-    B = list(map(int, input().split()))
-
-    # A의 모든 부분합 구하기
-    sumA = []
-    for i in range(n):
-        temp = 0
-        for j in range(i, n):
-            temp += A[j]
-            sumA.append(temp)
-
-    # B의 모든 부분합 구하기
-    sumB = []
-    for i in range(m):
-        temp = 0
-        for j in range(i, m):
-            temp += B[j]
-            sumB.append(temp)
-
-    # B 부분합을 Counter로 저장
-    countB = Counter(sumB)
-
-    # A 부분합마다 T - sumA 값을 B에서 찾기
-    result = 0
-    for a in sumA:
-        result += countB[T - a]
-
-    print(result)
-
+    t = int(input()) # sum_target, [t] <=1,000,000,000
+    na = int(input()) # <=1000
+    a = list(map(int, input().split()))
+    nb = int(input()) # <=1000
+    b = list(map(int, input().split()))
+    # 연속 배열쌍의 개수 구하기
+    def prefix_sum(n, arr):
+        sum_list = []
+        for i in range(n):
+            now = 0
+            for j in range(i, n):
+                now += arr[j]
+                sum_list.append(now)
+        return sum_list
+    sum_a = prefix_sum(na, a)
+    sum_b = prefix_sum(nb, b)
+    sum_b_cnt = Counter(sum_b)
+    answer = 0
+    for sa in sum_a:
+        answer += sum_b_cnt[t-sa]
+    print(answer)
 solution()
