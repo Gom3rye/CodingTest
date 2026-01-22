@@ -1,29 +1,35 @@
 import sys
-from collections import Counter
 input = sys.stdin.readline
 def solution():
-    n = int(input())
+    # 세 팀원의 코딩 실력의 합이 0인 팀 몇 개 만들 수 있는지
+    n = int(input()) # #학생 <=10000
     a = sorted(map(int, input().split()))
-    # n<=10000으로 매우 크기 때문에 3중 for문은 안되고 0~n-3까지의 수를 고정시켜 놓고 그 안에서 투포인터로 2개 고르기 -> O(n^2)
-    counter = Counter(a)
-    cnt = 0
+    total = 0
     for i in range(n-2):
-        one = a[i] # 고정시켜놓고
+        one = a[i]
         two, three = i+1, n-1
         while two < three:
-            result = one + a[two] + a[three]
-            if result < 0:
+            team = one+a[two]+a[three]
+            if team < 0:
                 two += 1
-            elif result > 0:
+            elif team > 0:
                 three -= 1
-            else: # result == 0:
-                if a[two] == a[three]:
-                    # 정렬되어 있는 상태니까 two<->three 사이의 수들은 모두 a[two], a[three]와 같은 수
-                    combi = three-two+1
-                    cnt += combi*(combi-1)//2
+            else: # total == 0:
+                if a[two] == a[three]: # -4, 2, 2
+                    cnt = three-two+1
+                    total += (cnt*(cnt-1)//2) # 조합
                     break
-                else: 
-                    cnt += counter[a[three]]
-                two += 1
-    print(cnt)      
+                else: # -4, 1, 3
+                    left = a[two]
+                    left_cnt = 0
+                    while a[two] == left:
+                        two += 1
+                        left_cnt += 1
+                    right = a[three]
+                    right_cnt = 0
+                    while a[three] == right:
+                        three -= 1
+                        right_cnt += 1
+                    total += left_cnt*right_cnt
+    print(total)
 solution()
