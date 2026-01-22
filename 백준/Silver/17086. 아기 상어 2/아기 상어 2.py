@@ -1,43 +1,25 @@
 import sys
 from collections import deque
-
 input = sys.stdin.readline
-
 def solution():
-    N, M = map(int, input().split())
-    grid = [list(map(int, input().split())) for _ in range(N)]
-
-    # 거리 배열 (-1: 아직 방문 안 함)
-    dist = [[-1]*M for _ in range(N)]
-    q = deque()
-
-    # 모든 상어 위치를 BFS 시작점으로 큐에 넣기
-    for i in range(N):
-        for j in range(M):
-            if grid[i][j] == 1:
-                dist[i][j] = 0
-                q.append((i, j))
-
-    # 8방향
-    dr = [-1,-1,-1,0,0,1,1,1]
-    dc = [-1,0,1,-1,1,-1,0,1]
-
-    # BFS
+    n, m = map(int, input().split()) # <=50
+    board = [list(map(int, input().split())) for _ in range(n)]
+    # 안전 거리의 최댓값 출력 -> 모든 상어와의 거리를 고려해야 하므로 multi-source bfs
+    sharks = []
+    distance = [[-1]*m for _ in range(n)]
+    for i in range(n):
+        for j in range(m):
+            if board[i][j] == 1:
+                sharks.append((i, j))
+                distance[i][j] = 0
+    q = deque(sharks)
     while q:
-        r, c = q.popleft()
-        for d in range(8):
-            nr, nc = r + dr[d], c + dc[d]
-            if 0 <= nr < N and 0 <= nc < M:
-                if dist[nr][nc] == -1:
-                    dist[nr][nc] = dist[r][c] + 1
-                    q.append((nr, nc))
-
-    # 가장 큰 안전 거리 찾기
-    ans = 0
-    for i in range(N):
-        for j in range(M):
-            ans = max(ans, dist[i][j])
-
-    print(ans)
-
+        x, y = q.popleft()
+        for nx, ny in [(x+1,y),(x-1,y),(x,y+1),(x,y-1),(x-1,y-1),(x+1,y+1),(x-1,y+1),(x+1,y-1)]:
+            if not (0<=nx<n and 0<=ny<m):
+                continue
+            if distance[nx][ny] == -1:
+                distance[nx][ny] = distance[x][y]+1
+                q.append((nx, ny))
+    print(max(map(max, distance)))
 solution()
