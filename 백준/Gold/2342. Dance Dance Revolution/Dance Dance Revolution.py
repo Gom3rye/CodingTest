@@ -1,38 +1,34 @@
 import sys
+INF = float('inf')
 input = sys.stdin.readline
 def solution():
-    numbers = list(map(int, input().split())) # len <= 100,000
-    numbers.pop() # 마지막 원소 제거
-    # 그 직전의 dp 값만 보면 최소의 파워를 구할 수 있다.
-    # dp[left][right]: 두 발이 (l, r)에 있을 때의 최소 힘
-    INF = float('inf')
-    dp = [[INF]*5 for _ in range(5)]
-    # dp 초기화
-    dp[0][0] = 0
-    def cost(prev, nxt):
-        if prev == nxt:
+    arr = list(map(int, input().split()))[:-1]
+    n = len(arr) # <100,000
+    # 최소의 힘 출력 (특정 스텝에 도달했을 때 발의 위치 조합에 따라 이후의 최소 비용이 달라짐)
+    # -> 모든 위치 조합에 대한 최소 힘을 누적해나가야 함
+    dp = [[INF]*5 for _ in range(5)] # dp[idx][left][right]을 new_dp, dp 2개를 이용해서 2차원으로 대체
+    def move(a, b): # prev, nxt
+        if a == b: # 같은 곳을 누른다면
             return 1
-        elif prev == 0:
+        elif a == 0: # 0에서 출발한다면
             return 2
-        elif abs(prev-nxt) == 2: # 마주보는 경우
+        elif abs(a-b) == 2: # 반대편
             return 4
         else:
             return 3
-        
-    for nxt in numbers:
+    dp[0][0] = 0 # 첫 비용 초기화
+    for op in arr:
         new_dp = [[INF]*5 for _ in range(5)]
         for left in range(5):
             for right in range(5):
-                if dp[left][right] == INF: # 접근 불가
+                if dp[left][right] == INF: # 최적화를 위해
                     continue
-                # 왼발을 움직이는 경우
-                if nxt != right: # 두 발이 같은 곳일 수 없음
-                    new_dp[nxt][right] = min(new_dp[nxt][right], dp[left][right]+cost(left, nxt))
-                # 오른발을 움직이는 경우
-                if nxt != left:
-                    new_dp[left][nxt] = min(new_dp[left][nxt], dp[left][right]+cost(right, nxt))
+                # 왼쪽을 움직이는 경우
+                if op != right: # 두 발이 같은 곳에 가면 안되니까
+                    new_dp[op][right] = min(new_dp[op][right], dp[left][right]+move(left, op))
+                # 오른쪽을 움직이는 경우
+                if op != left: 
+                    new_dp[left][op] = min(new_dp[left][op], dp[left][right]+move(right, op))
         dp = new_dp
-    # 최솟값 출력
-    answer = min(min(row) for row in dp)
-    print(answer)
+    print(min(map(min, dp)))
 solution()
