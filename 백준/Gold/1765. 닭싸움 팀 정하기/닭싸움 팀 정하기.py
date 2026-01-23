@@ -24,9 +24,6 @@ def solution():
         else: # r == 'F'
             union(a, b)
 
-    for i in range(n):
-        find(i)
-
     # 적의 적은 친구다
     for i in range(n):
         ne = len(enemies[i])
