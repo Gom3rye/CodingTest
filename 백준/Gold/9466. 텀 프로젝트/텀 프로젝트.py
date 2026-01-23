@@ -1,34 +1,36 @@
 import sys
 sys.setrecursionlimit(10**6)
 input = sys.stdin.readline
-
 def solution():
     t = int(input())
+    def dfs(now):
+        nonlocal cnt
+        visited[now] = 1
+        nxt = students[now]
+        if visited[nxt] == -1:
+            dfs(nxt)
+        elif visited[nxt] == 1: # 사이클 생성
+            count = 1
+            while nxt != now: # 기존 루트까지 찾아서
+                nxt = students[nxt]
+                count += 1
+            cnt += count
+
+        visited[now] = 2 # 완료 처리
+        
+
     for _ in range(t):
-        n = int(input())
-        graph = [0] + list(map(int, input().split()))
-        visited = [False] * (n+1)
-        finished = [False] * (n+1)
-        result = 0
-
-        def dfs(x):
-            nonlocal result
-            visited[x] = True
-            y = graph[x]
-            if not visited[y]:
-                dfs(y)
-            elif not finished[y]:
-                # 사이클이 형성된 경우만 카운트
-                temp = y
-                while temp != x:
-                    result += 1
-                    temp = graph[temp]
-                result += 1
-            finished[x] = True
-
-        for i in range(1, n + 1):
-            if not visited[i]:
+        n = int(input()) # #힉셍 <=100,000
+        temp = list(map(int, input().split()))
+        students = []
+        for i in range(n):
+            students.append(temp[i]-1) # 0based index
+        
+        # 사이클 생성 탐지
+        cnt = 0
+        visited = [-1]*n
+        for i in range(n):
+            if visited[i] == -1:
                 dfs(i)
-
-        print(n - result)
+        print(n-cnt)
 solution()
