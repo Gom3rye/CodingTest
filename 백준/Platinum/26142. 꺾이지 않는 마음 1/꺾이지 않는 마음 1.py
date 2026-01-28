@@ -8,10 +8,9 @@ def solution():
     # -> 0/1 knapsack 문제!! (단, 아이템의 가치가 날짜에 따라 변하는 특수한 knapsack-> sort 필요)
     dragons.sort() # 작은 성장률부터 앞자리 채우기
     dp = [0]*(n+1)
-    cnt = 0 # 현재까지 고려한 용들로 채울 수 있는 최대 날짜 (지금까지 고려한 용의 수)
-    for d, h in dragons:
-        cnt += 1
-        for i in range(cnt, 0, -1):
-            dp[i] = max(dp[i], dp[i-1]+h+(i-1)*d)
-    print("\n".join(map(str, dp[1:])))
+    for i in range(n): # 0based index
+        d, h = dragons[i]
+        for day in range(i+1, 0, -1): # 0/1냅색이니까 뒤에서부터
+            dp[day] = max(dp[day], dp[day-1]+h+(day-1)*d)
+    print('\n'.join(map(str, dp[1:])))
 solution()
