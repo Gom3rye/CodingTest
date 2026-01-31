@@ -5,15 +5,16 @@ def solution():
     a = list(map(int, input().split()))
     # a+b+c = a[d] -> a+b = a[d]-c
     two_sum = set()
+    pre_set = set() # 앞에 있는 수들
     cnt = 0
-    for i in range(n):
-        # i번째 수가 좋은 수인지 확인
-        for j in range(i):
-            if a[i]-a[j] in two_sum:
+    for num in a:
+        for pre in pre_set:
+            if num-pre in two_sum:
                 cnt += 1
-                break # 좋은 수 판단 완료
-        # two_sum 갱신 (a[i]를 사용해서)
-        for k in range(i+1): # 같은 수 여러번 더해도 되니까 i+1까지해서 i*2도 가능하도록!
-            two_sum.add(a[i]+a[k])
+                break
+        if num not in pre_set:
+            pre_set.add(num)
+            for pre in pre_set:
+                two_sum.add(num+pre)
     print(cnt)
 solution()
