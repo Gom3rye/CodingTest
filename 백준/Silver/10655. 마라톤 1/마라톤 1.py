@@ -1,39 +1,21 @@
 import sys
-
-def get_dist(p1, p2):
-    # 맨해튼 거리 계산: |x1-x2| + |y1-y2|
-    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
-
-def solve():
-    input = sys.stdin.read().split()
-    if not input: return
-    
-    n = int(input[0])
-    points = []
-    idx = 1
-    for _ in range(n):
-        points.append((int(input[idx]), int(input[idx+1])))
-        idx += 2
-        
-    # 1. 건너뛰지 않았을 때의 총 거리 구하기
-    total_dist = 0
-    for i in range(n - 1):
-        total_dist += get_dist(points[i], points[i+1])
-        
-    # 2. 각 체크포인트를 건너뛸 때 줄어드는 최대 거리(이득) 찾기
-    max_save = 0
-    for i in range(1, n - 1):
-        # i번을 거쳐갈 때의 거리
-        original = get_dist(points[i-1], points[i]) + get_dist(points[i], points[i+1])
-        # i번을 건너뛰고 직행할 때의 거리
-        shortcut = get_dist(points[i-1], points[i+1])
-        
-        save = original - shortcut
-        if save > max_save:
-            max_save = save
-            
-    # 3. 전체 거리에서 가장 큰 이득을 뺌
-    print(total_dist - max_save)
-
-if __name__ == "__main__":
-    solve()
+input = sys.stdin.readline
+INF = float('inf')
+def dist(c1, c2):
+    return abs(c1[0]-c2[0])+abs(c1[1]-c2[1])
+def solution():
+    n = int(input()) # #checkpoint <=100,000
+    checkpoints = [list(map(int, input().split())) for _ in range(n)]
+    # 체크포인트 1개 건너뛰면서 달릴 수 있고 이때 달려야 하는 최소 거리는?
+    not_used = [0]*n # 현재->다음(미래)로 전개: push방식!
+    used = [INF]*n # 건너뛰는 기회를 쓴 경우 # 처음은 못 건너뛰니까 used[0] = 0으로 초기화 안해도 됨
+    for i in range(1, n):
+        d = dist(checkpoints[i-1], checkpoints[i])
+        # 갱신(건너뛰기가 1번밖에 안되기 때문에 건너뛰기 사용여부를 체크하기 위해 두 상태 모두 갱신하며 가져가야 한다.)
+        not_used[i] = not_used[i-1]+d
+        used[i] = used[i-1]+d
+        # 건너 뛰고 온 경우
+        if i >= 2:
+            used[i] = min(used[i], not_used[i-2]+dist(checkpoints[i-2], checkpoints[i]))
+    print(used[-1])
+solution()
