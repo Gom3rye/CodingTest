@@ -4,10 +4,8 @@ INF = float('inf')
 def solution():
     n, m = map(int, input().split()) # #수 <=10000, 연속수열의 합(target) <=300,000,000
     arr = list(map(int, input().split()))
-    cnt, now, start = 0, arr[0], 0
-    if now == m:
-        cnt += 1
-    for end in range(1, n):
+    cnt, now, start = 0, 0, 0
+    for end in range(n):
         now += arr[end]
         while now > m:
             now -= arr[start]
