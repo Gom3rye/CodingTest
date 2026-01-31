@@ -1,17 +1,18 @@
-n, m = map(int, input().split())
-s = list(map(int, input().split()))
-ans = 0
-l = 0
-r = 0
-
-while(r<n):
-    k = sum(s[l:r+1])
-    if k == m: 
-        ans += 1
-        r += 1
-    elif k > m:
-        l += 1
-    else:
-        r += 1
-    
-print(ans)
+import sys
+input = sys.stdin.readline
+INF = float('inf')
+def solution():
+    n, m = map(int, input().split()) # #수 <=10000, 연속수열의 합(target) <=300,000,000
+    arr = list(map(int, input().split()))
+    cnt, now, start = 0, arr[0], 0
+    if now == m:
+        cnt += 1
+    for end in range(1, n):
+        now += arr[end]
+        while now > m:
+            now -= arr[start]
+            start += 1
+        if now == m:
+            cnt += 1
+    print(cnt)
+solution()
