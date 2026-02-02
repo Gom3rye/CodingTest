@@ -1,80 +1,39 @@
-import sys
-import math
-import heapq
-
+import sys, math, heapq
 input = sys.stdin.readline
-
-def solve():
-    # 1. 입력 처리
-    try:
-        line1 = input().split()
-        if not line1: return
-        a, b = map(int, line1)
-        
-        line2 = input().split()
-        if not line2: return
-        n = int(line2[0])
-    except:
-        return
-    
-    signs = []
-    for _ in range(n):
-        signs.append(tuple(map(int, input().split())))
-    
-    start_node = 0
-    end_node = n + 1
-    total_nodes = n + 2
-    nodes = [(0, 0)] + signs + [(a, b)]
-    
-    # 2. 다익스트라
-    distances = [float('inf')] * total_nodes
-    distances[start_node] = 0
-    pq = [(0.0, start_node)]
-    
-    while pq:
-        curr_dist, curr_node = heapq.heappop(pq)
-        
-        if curr_dist > distances[curr_node]:
-            continue
-            
-        if curr_node == end_node:
+INF = float('inf')
+def solution():
+    a, b = map(int, input().split()) # 도착 지점의 좌표, -10^9~10^9
+    n = int(input()) # #간판 <=2000
+    # 중요: 원과 원사이의 거리가 1이하면 거리(받는 스트레스)는 0이 된다.
+    v = n+2 # 총 점들
+    xs = [0.0]*v # x좌표들
+    ys = [0.0]*v
+    rs = [0.0]*v
+    for i in range(1, v-1):
+        x, y = map(int, input().split())
+        xs[i], ys[i], rs[i] = x, y, 1.0 # i번째 점의 x,y좌표, 반지름 저장(1길이만큼 볼 수 있음)
+    # 끝점은 a,b,0
+    xs[-1], ys[-1], rs[-1] = float(a), float(b), 0.0 # 끝점은 그냥 도착점이지 원이 아니니까 반지름 0
+    q = []
+    heapq.heappush(q, (0.0, 0)) # cost, start_node
+    distance = [INF]*v
+    distance[0] = 0.0
+    while q:
+        dist, now = heapq.heappop(q)
+        if now == v-1: # 도착지 도달하면 종료
             break
-            
-        curr_pos = nodes[curr_node]
-        for next_node in range(total_nodes):
-            if curr_node == next_node: continue
-            
-            next_pos = nodes[next_node]
-            # math.isqrt나 정수 연산이 불가능하므로 hypot을 사용하되 
-            # 최대한 정밀도를 유지합니다.
-            d = math.hypot(curr_pos[0] - next_pos[0], curr_pos[1] - next_pos[1])
-            
-            # 가중치 결정 규칙
-            if (curr_node == 0 and next_node == n + 1) or (curr_node == n + 1 and next_node == 0):
-                weight = d
-            elif curr_node == 0 or curr_node == n + 1 or next_node == 0 or next_node == n + 1:
-                weight = max(0.0, d - 1.0)
-            else:
-                weight = max(0.0, d - 2.0)
-            
-            if distances[next_node] > curr_dist + weight:
-                distances[next_node] = curr_dist + weight
-                heapq.heappush(pq, (distances[next_node], next_node))
-                
-    ans = distances[end_node]
-    
-    # 3. 💡 출력 정밀도 보정
-    # 만약 정답이 0에 수렴하면 0 출력
-    if ans < 1e-11:
-        print(0)
-    else:
-        # 소수점 10번째 자리에서 반올림하여 9번째 자리까지 출력
-        # 예제 1에서 2.236067978을 요구한다면 반올림이 핵심입니다.
-        result = "{:.9f}".format(ans)
-        # 불필요한 뒷자리 0을 제거하되, 예제 출력 형식을 최대한 따릅니다.
-        if "." in result:
-            result = result.rstrip('0').rstrip('.')
-        print(result)
-
-if __name__ == "__main__":
-    solve()
+        if dist > distance[now]:
+            continue
+        # 모든 조합 다돌아봐야 최소 비용 알 수 있다. (n<=2000이니까 가능)
+        for nxt in range(v):
+            if nxt == now:
+                continue
+            dx, dy = xs[now]-xs[nxt], ys[now]-ys[nxt]
+            d = math.hypot(dx, dy)-(rs[now]+rs[nxt]) # math.hypot: float반환
+            d = max(0.0, d) # 음수가 나오면 비용은 0이니까
+            ndist = dist+d
+            if ndist < distance[nxt]:
+                distance[nxt] = ndist
+                heapq.heappush(q, (ndist, nxt))
+    print(f"{distance[-1]:.10f}")
+solution()
