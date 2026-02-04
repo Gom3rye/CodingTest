@@ -12,7 +12,7 @@ def solution():
             if (dna[i]=='a' and dna[j]=='t') or (dna[i]=='g' and dna[j]=='c'):
                 dp[i][j] = dp[i+1][j-1]+2
             # 방법2: x,y가 유전자라면 xy도 유전자, k: 왼쪽 구간의 끝 인덱스
-            for k in range(i, j): # (i,i)/(i+1,j) ~ (i,j-1)/(j,j) 까지 모든 가능한 분할 지점 다 확인해봐야 한다.
-                dp[i][j] = max(dp[i][j], dp[i][k]+dp[k][j])
+            for k in range(i, j): # (i,i)/(i,j) ~ (i,j/(j,j) 까지 모든 가능한 분할 지점 다 확인해봐야 한다.
+                dp[i][j] = max(dp[i][j], dp[i][k]+dp[k+1][j])
     print(dp[0][-1])
 solution()
