@@ -2,9 +2,7 @@ import sys
 from collections import deque
 input = sys.stdin.readline
 def rotate(spots):
-    result = []
-    for r, c in spots:
-        result.append((c, -r)) # cw로 90도 회전: (r,c) => (c,-r)
+    result = [(c, -r) for r, c in spots] # cw로 90도 회전: (r,c) => (c,-r)
     min_r, min_c = min(r for r, _ in result), min(c for _, c in result)
     # 0,0으로 모는 정규화 (0,0을 기준으로 정렬되어 있음)
     return sorted((r-min_r, c-min_c) for r, c in result)
@@ -43,16 +41,17 @@ def solution(game_board, table):
     
     # 실제 모든 puzzle을 space와 비교해보며 완탐!
     answer = 0 # 최대한 채워넣은 칸 수
-    used = [False]*len(puzzles)
+    pn = len(puzzles)
+    used = [False]*pn
     for space in spaces:
-        for i in range(len(puzzles)):
+        found = False
+        for i in range(pn):
             puzzle = puzzles[i]
             # 이미 쓴 퍼즐이거나 칸 수가 다르다면 볼 것도 없음
             if used[i] or len(space) != len(puzzle):
                 continue
             # 4번 회전해보며 딱 맞는지 탐색
             temp = puzzle
-            found = False
             for dir in range(4):
                 if temp == space:
                     answer += len(puzzle)
