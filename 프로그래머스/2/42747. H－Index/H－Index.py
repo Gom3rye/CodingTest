@@ -11,8 +11,6 @@ def solution(citations):
         if more >= mid and less <= mid:
             answer = mid
             start = mid+1
-        elif more < mid:
+        else:
             end = mid-1
-        elif less > mid:
-            start = mid+1
     return answer
