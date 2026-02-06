@@ -11,10 +11,9 @@ def solution():
         else:
             s = alpha_dict[i//10]+alpha_dict[i%10]
             answer.append((s, i))
-    answer.sort()
+    answer = [num for _, num in sorted(answer)]
     # 이제 숫자만 10개 단위로 끊어서 출력
-    for i, (_, num) in enumerate(answer, start=1): # 인덱스 시작값 1로
-        print(num, end=' ')
-        if i != 0 and i%10 == 0:
-            print()
+    cnt = n-m+1
+    for i in range(0, cnt, 10):
+        print(*answer[i:i+10])
 solution()
