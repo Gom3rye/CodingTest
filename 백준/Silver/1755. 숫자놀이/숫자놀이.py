@@ -2,7 +2,8 @@ import sys
 input = sys.stdin.readline
 def solution():
     m, n = map(int, input().split()) # m이상 n이하의 정수 <=99
-    alpha_dict = {0:'zero', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five', 6:'six', 7:'seven', 8:'eight', 9:'nine'}
+    # 어차피 인덱스가 key가 되니까 dict로 안하고 list로 선언해도 된다.
+    alpha_dict = ['zero','one','two','three','four','five','six','seven','eight','nine']
     answer = []
     for i in range(m, n+1):
         if i < 10: # 1의 자리인 경우
