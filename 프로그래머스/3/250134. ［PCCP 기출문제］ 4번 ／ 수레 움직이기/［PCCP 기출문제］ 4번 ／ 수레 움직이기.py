@@ -37,13 +37,13 @@ def solution(maze):
             return
         
         # r가 갈 수 있는 후보 선정
-        red_candidates = [(erx, ery)] if red_arrived else []
+        red_candidates = [(rx, ry)] if red_arrived else []
         if not red_arrived:
             for nx, ny in [(rx+1,ry),(rx-1,ry),(rx,ry+1),(rx,ry-1)]:
                 if 0<=nx<n and 0<=ny<m and not red_visited[nx][ny] and maze[nx][ny] != 5:
                     red_candidates.append((nx, ny))
         # b가 갈 수 있는 후보 선정
-        blue_candidates = [(ebx, eby)] if blue_arrived else []
+        blue_candidates = [(bx, by)] if blue_arrived else []
         if not blue_arrived:
             for nx, ny in [(bx+1,by),(bx-1,by),(bx,by+1),(bx,by-1)]:
                 if 0<=nx<n and 0<=ny<m and not blue_visited[nx][ny] and maze[nx][ny] != 5:
