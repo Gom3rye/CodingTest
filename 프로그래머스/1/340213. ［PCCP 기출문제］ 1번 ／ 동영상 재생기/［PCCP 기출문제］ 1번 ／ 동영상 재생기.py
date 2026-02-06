@@ -1,12 +1,12 @@
 def solution(video_len, pos, op_start, op_end, commands):
     # 문자 시간 -> 숫자 시간
     def string_to_num(string):
-        hour, minute = string.split(':')
-        return int(hour)*60+int(minute)
+        minute, second = string.split(':')
+        return int(minute)*60+int(second)
     # 숫자 시간 -> 문자 시간
     def num_to_string(num):
-        hour, minute = num//60, num%60
-        return str(hour).zfill(2)+":"+str(minute).zfill(2)
+        minute, second = num//60, num%60
+        return str(minute).zfill(2)+":"+str(second).zfill(2)
     # 필요한 변수들 다 숫자로 변환
     end = string_to_num(video_len)
     now = string_to_num(pos)
