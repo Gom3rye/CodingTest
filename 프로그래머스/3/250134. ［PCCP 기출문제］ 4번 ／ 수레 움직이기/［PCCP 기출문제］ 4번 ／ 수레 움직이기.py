@@ -25,7 +25,11 @@ def solution(maze):
                 
     def backtracking(rx, ry, bx, by, time): # 전 rx, ry, bx, by, 시간
         nonlocal answer
-        # 둘다 도착하면 시간 리턴
+        # 가지치기
+        if time >= answer:
+            return
+        
+        # 둘다 도착하면 answer 갱신
         red_arrived = (rx, ry) == (erx, ery)
         blue_arrived = (bx, by) == (ebx, eby)
         if red_arrived and blue_arrived:
